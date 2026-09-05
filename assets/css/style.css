@@ -1,0 +1,783 @@
+/*خنثی سازی استایل پیشفرض قالب ها*/
+.nias-modal-box button,
+.nias-modal-box input {
+  margin: 0;
+  min-height: 0;
+  height: auto;
+  padding: 0;
+  box-shadow: none;
+}
+/* --------------------------------- اینپوت --------------------------------- */
+.nias-modal-box * {
+  box-sizing: border-box;
+}
+.nias-main-modal .nsinput-field label.ns-radio-label {
+  position: absolute !important;
+  color: #8d8d8d;
+  pointer-events: none;
+  background-color: transparent;
+  right: 9px;
+  transform: translateY(6px);
+  transition: all 0.3s ease;
+  max-width: fit-content;
+  top: 0;
+  margin: 0;
+  line-height: 30px;
+  font-size: 15px;
+}
+.elementor-widget-nias_login_widget
+  .nias-main-modal
+  .nsinput-field
+  .ns-radio-label {
+  transform: translateY(var(--nias-label-ty, 6px))
+    translateX(var(--nias-label-tx, 0px)) scale(var(--nias-label-sc, 1));
+}
+
+.nias-main-modal .nsinput-field input[type="text"],
+.nias-main-modal .nsinput-field input[type="password"],
+.nias-main-modal .nsinput-field input[type="tel"],
+.nias-main-modal .nsinput-field input[type="email"] {
+  box-sizing: border-box;
+  font-size: var(--nias-font-size, 1rem);
+  line-height: var(--nias-input-line-height, 0);
+  border-radius: 8px;
+  width: 100%;
+  max-width: 100%;
+  padding: var(--nias-input-padding, 12px 16px);
+  min-height: var(--nias-input-min-height,43px);
+  height: var(--nias-input-height, auto);
+  border: 1px solid #cdcdcd;
+  outline: none !important;
+}
+
+.nias-main-modal .nsinput-field input[type="text"]:focus,
+.nias-main-modal .nsinput-field input[type="password"]:focus,
+.nias-main-modal .nsinput-field input[type="tel"]:focus,
+.nias-main-modal .nsinput-field input[type="email"]:focus,
+.nias-main-modal .nsinput-field input[type="text"]:valid,
+.nias-main-modal .nsinput-field input[type="password"]:valid,
+.nias-main-modal .nsinput-field input[type="tel"]:valid,
+.nias-main-modal .nsinput-field input[type="email"]:not(:placeholder-shown) {
+  outline: none;
+  border: solid 1px #0034de;
+}
+
+.nias-main-modal .nsinput-field input[type="text"]:focus ~ label,
+.nias-main-modal .nsinput-field input[type="password"]:focus ~ label,
+.nias-main-modal .nsinput-field input[type="tel"]:focus ~ label,
+.nias-main-modal .nsinput-field input[type="email"]:focus ~ label,
+.nias-main-modal .nsinput-field input[type="text"]:valid ~ label,
+.nias-main-modal .nsinput-field input[type="password"]:valid ~ label,
+.nias-main-modal .nsinput-field input[type="tel"]:valid ~ label,
+.nias-main-modal
+  .nsinput-field
+  input[type="email"]:not(:placeholder-shown)
+  ~ label {
+  transform: translateY(-14px) translateX(-5px) scale(0.7);
+  background-color: #fff;
+  padding: 0px 5px;
+  color: #0034de;
+  font-weight: bold;
+  letter-spacing: 1px;
+  border: none;
+  border-radius: 100px;
+}
+
+.elementor-widget-nias_login_widget
+  .nias-main-modal
+  .nsinput-field
+  input[type="text"]:focus
+  ~ label,
+.elementor-widget-nias_login_widget
+  .nias-main-modal
+  .nsinput-field
+  input[type="password"]:focus
+  ~ label,
+.elementor-widget-nias_login_widget
+  .nias-main-modal
+  .nsinput-field
+  input[type="tel"]:focus
+  ~ label,
+.elementor-widget-nias_login_widget
+  .nias-main-modal
+  .nsinput-field
+  input[type="email"]:focus
+  ~ label,
+.elementor-widget-nias_login_widget
+  .nias-main-modal
+  .nsinput-field
+  input[type="text"]:valid
+  ~ label,
+.elementor-widget-nias_login_widget
+  .nias-main-modal
+  .nsinput-field
+  input[type="password"]:valid
+  ~ label,
+.elementor-widget-nias_login_widget
+  .nias-main-modal
+  .nsinput-field
+  input[type="tel"]:valid
+  ~ label,
+.elementor-widget-nias_login_widget
+  .nias-main-modal
+  .nsinput-field
+  input[type="email"]:not(:placeholder-shown)
+  ~ label {
+  transform: translateY(var(--nias-label-ty-f, -14px))
+    translateX(var(--nias-label-tx-f, -5px)) scale(var(--nias-label-sc-f, 0.7)) !important;
+}
+
+/* --------------------------------- تب بندی -------------------------------- */
+.nias-tabs {
+  overflow: hidden;
+}
+.nias-tabs__header {
+  display: flex;
+  gap: 6px;
+  padding: 8px;
+}
+
+/* رادیوها را مخفی می‌کنیم ولی قابل دسترسی می‌مانند */
+.nias-main-modal .nias-tabs input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  inset-inline-start: -9999px;
+}
+
+.nias-main-modal label#nias-label-2 {
+  float: right;
+}
+
+.nias-main-modal label#nias-label-1 {
+  float: left;
+}
+
+/* برچسب تب‌ها */
+.nias-tabs label:not(.nsinput-field label) {
+  cursor: pointer;
+  user-select: none;
+  padding: 8px 15px;
+  border-radius: 12px;
+  color: #cbd5e1;
+  font-weight: 600;
+  transition: all 0.25s ease;
+  outline-offset: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 999;
+  position: relative;
+  background-color: #000000;
+}
+.nias-tabs label[aria-selected="false"] {
+    background-color: #00000017!important;
+    color: #000000bd!important;
+}
+.nias-tabs label:not(.nsinput-field label):hover,
+.nias-tabs [id^="nias-tab-"]:checked + label {
+  color: #ffffff;
+}
+
+/* بدنه تب‌ها */
+.nias-tabs__panels {
+  position: relative;
+}
+.nias-panel {
+  display: none;
+  border-radius: 14px;
+  animation: nias-fade 0.25s ease both;
+}
+@keyframes nias-fade {
+  from {
+    opacity: 0;
+    translate: 0 6px;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+/* نمایش پنل مرتبط با هر رادیو */
+
+/* اسکرول افقی تب‌ها روی موبایل */
+.nias-tabs__header {
+  overflow: auto;
+  scrollbar-width: thin;
+}
+.nias-tabs__header::-webkit-scrollbar {
+  height: 6px;
+}
+.nias-tabs__header::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 999px;
+}
+
+/* تایپوگرافی محتوا */
+.nias-panel p {
+  margin: 0.25rem 0;
+}
+
+/* حالت کنتراست کافی برای فوکوس صفحه‌کلید */
+.nias-tabs label:focus-visible {
+  outline: 3px solid #38bdf8;
+}
+
+/* ترجیحات کاهش انیمیشن */
+@media (prefers-reduced-motion: reduce) {
+}
+
+.nias-modal-box {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 999999999;
+  background-color: #00000082;
+  visibility: hidden;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
+  opacity: 0;
+  transition: all 0.3s linear;
+  display: flex;
+}
+.nias-modal-box.open,
+.nias-locked .nias-modal-box {
+  visibility: visible;
+  opacity: 1;
+}
+.nias-locked
+  *:not(.nias-modal-box *, .nias-modal-box, .nias-success, .nias-success *, #nias-toast-wrap, #nias-toast-wrap *),
+.nias-locked button.nias-close-modal {
+  display: none;
+}
+.nias-panel .nias-modal-title {
+  display: flex;
+  justify-content: center;
+}
+
+.nias-main-modal {
+  background-color: var(--nias-modal-bg, #fff);
+  padding: 15px;
+  border-radius: var(--nias-radius, 15px);
+  position: relative;
+  width: 400px;
+  display: block;
+  margin: 10px;
+  max-width: 750px;
+  transform: scale(0);
+  transition: 0.3s;
+}
+.nias-modal-box.open .nias-main-modal,
+.nias-locked .nias-main-modal {
+  transform: scale(1);
+}
+
+@media screen and (max-width: 500px) {
+  .nias-main-modal {
+    width: 350px;
+  }
+}
+.nias-phone-box {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  background-color: #f3f3f3;
+  padding: 10px;
+  border-radius: 10px;
+  gap: 10px;
+}
+
+.nias-phone-box input[type="text"],
+.nias-phone-box input[type="password"],
+.nias-phone-box input[type="tel"],
+.nias-phone-box input[type="email"] {
+  border: none;
+  outline: none;
+  background-color: transparent;
+  direction: ltr;
+  border-bottom: 1px solid #043dcc00;
+}
+
+.nias-phone-box input[type="text"]:focus,
+.nias-phone-box input[type="password"]:focus,
+.nias-phone-box input[type="tel"]:focus,
+.nias-phone-box input[type="email"]:focus {
+  border-bottom: 1px solid #043ccc;
+  border-radius: 0;
+}
+
+.nias-login-field button,
+.nias-login-code button {
+  background: var(--nias-primary, #043ccc);
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row-reverse;
+  color: white;
+  fill: white;
+  border: none;
+  outline: none;
+  border-radius: 10px;
+  margin-top: 20px;
+  gap: 10px;
+  padding: 12px 24px;
+  font-family: unset;
+  margin-bottom: 0;
+}
+button.nias-close-modal {
+  padding: 0;
+  outline: none !important;
+  display: flex;
+  gap: 10px;
+  font-size: 12px;
+  border: none !important;
+  position: absolute;
+  top: -22px;
+  right: 0;
+  color: white;
+  background-color: var(--nias-close-btn-bg, red) !important;
+  align-items: center;
+  width: 100px;
+  text-align: center;
+  justify-content: center;
+  border-radius: 20px 20px 0 20px;
+  padding: 5px;
+  font-family: unset;
+  box-shadow: -14px 5px 20px 0 #0000004a;
+}
+.nias-modal-title {
+  width: 100%;
+  text-align: center;
+  display: block;
+  font-size: var(--nias-title-font-size, 20px);
+  font-weight: bold;
+  margin-bottom: 30px;
+  color: var(--nias-title-color, #205fff);
+}
+/*
+span.nias-modal-title.second-form {
+  width: 100%;
+  display: flex;
+}
+  */
+.nias-subtitle,
+.nias-login-form label:not(.nsinput-field label) {
+  width: 100%;
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: var(--nias-subtitle-font-size, 13px);
+  display: block;
+}
+
+.nias-login-message {
+  margin-top: 20px;
+  background-color: #ff000029;
+  padding: 5px 12px;
+  color: #fa0000;
+  border-radius: 10px;
+  display: none;
+}
+.nias-login-message.active {
+  display: flex;
+}
+
+.nias-code-box {
+  display: flex;
+  justify-content: space-around;
+  gap: 10px;
+  direction: ltr;
+  flex-wrap: nowrap;
+  flex-direction: row;
+}
+.nias-main-modal .nias-code-box input[type="text"],
+.nias-main-modal .nias-code-box input[type="password"],
+.nias-main-modal .nias-code-box input[type="tel"],
+.nias-main-modal .nias-code-box input[type="email"] {
+  background: #efefef;
+  width: 100%;
+  height: 50px;
+  border-radius: 10px;
+  border: 1px solid #cdcdcd00;
+  text-align: center;
+  direction: ltr;
+  font-size: 30px;
+  color: var(--nias-primary, #043ccc);
+  transition: all 0.3s ease;
+}
+.nias-main-modal .nias-code-box input[type="text"]:focus,
+.nias-main-modal .nias-code-box input[type="password"]:focus,
+.nias-main-modal .nias-code-box input[type="tel"]:focus,
+.nias-main-modal .nias-code-box input[type="email"]:focus {
+  background-color: #eaecff;
+  border: 1px solid #2666cf;
+  outline: none;
+}
+
+.nias-under-code {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+}
+.nias-login-result {
+  margin: 0;
+}
+.nias-confirm-box {
+  display: flex;
+  gap: 20px;
+}
+
+.nias-resend {
+  opacity: 0;
+  cursor: not-allowed;
+  text-decoration: none;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.nias-success {
+  background-color: #ffffffe6;
+  -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(10px);
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  z-index: 2147483646;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+p.niaslogin-success-title {
+  font-size: 20px;
+  color: #00cf30;
+  background-color: #00cf301c;
+  padding: 10px 24px;
+  border-radius: 10px;
+  font-weight: bold;
+}
+p.niaslogin-success-subtitle {
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  color: #00a827;
+  fill: #00a827;
+}
+.nias-success svg {
+  width: 50px;
+  height: 50px;
+}
+.nias-login-field button[disabled],
+.nias-login-code button[disabled] {
+  filter: grayscale(1);
+  cursor: not-allowed;
+}
+
+.nias-checkicon {
+  width: 70px;
+  height: 30px;
+  display: none;
+}
+
+.nias-resendbox {
+  display: flex;
+  gap: 10px;
+  color: var(--nias-primary, #043ccc);
+  border-radius: 10px;
+  width: 100%;
+  justify-content: center;
+  max-width: 200px;
+  padding: 10px;
+  margin: auto;
+  font-size: 13px;
+}
+
+.nias-resendbox.active .nias-resend {
+  cursor: pointer;
+  opacity: 1;
+  text-align: center;
+  border-radius: 10px;
+  color: white;
+  visibility: visible;
+  opacity: 1;
+}
+.nias-resendbox.active circle.fill-neutral-light {
+  fill: var(--nias-primary, #043ccc) !important;
+}
+
+span.nias-countdown {
+  display: flex;
+  justify-content: center;
+}
+input#niasphoneinput[type="text"],
+input#niasphoneinput[type="password"],
+input#niasphoneinput[type="tel"],
+input#niasphoneinput[type="email"] {
+  width: 100%;
+}
+#nias-change-number,
+.nias-main-modal button.nias-forgot-password {
+  background-color: color-mix(in srgb, var(--nias-primary, #043ccc) 28%, transparent);
+  color: var(--nias-primary, #043ccc);
+}
+
+.nias-spinner-timer {
+  fill: var(--nias-primary, #043ccc);
+}
+.stroke-neutral-dark {
+  stroke: var(--nias-primary, #043ccc) !important;
+}
+/* --------------------------- form logo style img -------------------------- */
+.nias-login-form-logo img,
+.nias-login-form-logo-code img {
+  display: flex;
+  align-self: center;
+}
+.nias-login-form-logo,
+.nias-login-form-logo-code {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ------------------------------- input email ------------------------------ */
+.nias-main-modal input#nias_email_input[type="text"],
+.nias-main-modal input#nias_email_input[type="password"],
+.nias-main-modal input#nias_email_input[type="tel"],
+.nias-main-modal input#nias_email_input[type="email"] {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  padding: var(--nias-input-padding, 12px 16px);
+  border: 1px solid #cdcdcd;
+  outline: none !important;
+  line-height: 0;
+}
+
+/* ---------------- to hide resend box when tab 2 is checked ---------------- */
+
+.ns-text-small {
+  font-size: 12px;
+  display: block;
+}
+.nias-modal-box form {
+  margin: 0;
+}
+
+/* ---------------------------- resend box style ---------------------------- */
+.nias-spinner-timer,
+.nias-resendbox.loading span.nias-countdown,
+.nias-resendbox.active span.nias-countdown,
+.nias-modal-box:has(#nias-tab-1:checked) .nias-resendbox,
+.logged-in .nias-main-modal,
+.nias-main-modal.verify .nias-login-form,
+.nias-main-modal .nias-login-code,
+.nias-login-field button svg,
+.nias-confirm-code svg {
+  display: none;
+}
+
+.nias-resendbox.loading .nias-spinner-timer,
+.nias-checkicon.correct,
+.nias-main-modal.verify .nias-login-code,
+.nias-main-modal form.loading button svg,
+#nias-tab-2:checked ~ .nias-tabs__panels #nias-panel-2,
+#nias-tab-1:checked ~ .nias-tabs__panels #nias-panel-1 {
+  display: block;
+}
+
+/*for improve timer svg*/
+.nias-resendbox,
+.nias-main-modal .nsinput-field {
+  position: relative;
+}
+
+/* --- OTP sending loader overlay --- */
+#nias-code-form {
+  position: relative;
+}
+#nias-code-form.nias-otp-sending::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(3px);
+  border-radius: 14px;
+  z-index: 10;
+}
+#nias-code-form.nias-otp-sending::before {
+  content: "در حال ارسال کد تایید...";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 11;
+  color: #043ccc;
+  font-weight: 600;
+  font-size: 14px;
+  white-space: nowrap;
+  background: #fff;
+  padding: 10px 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 12px rgba(4, 60, 204, 0.15);
+}
+
+.nias-resendbox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+a.nias-resend,
+span.nias-countdown,
+.nias-spinner-timer {
+  position: absolute;
+}
+
+.spinner_d9Sa {
+  transform-origin: center;
+}
+
+.spinner_qQQY {
+  animation: spinner_ZpfF 9s linear infinite;
+}
+
+.spinner_pote {
+  animation: spinner_ZpfF 0.75s linear infinite;
+}
+
+@keyframes spinner_ZpfF {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* ساخت رمز عبور دستی + سنجش قدرت رمز */
+.nias-manual-password {
+  display: flex;
+  flex-direction: column;
+}
+
+.nias-pass-strength {
+  margin: -2px 0 10px;
+}
+
+.nias-pass-strength__track {
+  height: 6px;
+  border-radius: 6px;
+  background: #e5e7eb;
+  overflow: hidden;
+}
+
+.nias-pass-strength__bar {
+  display: block;
+  height: 100%;
+  width: 0;
+  border-radius: 6px;
+  background: #e53935;
+  transition: width 0.25s ease, background 0.25s ease;
+}
+
+.nias-pass-strength__text {
+  display: block;
+  margin-top: 4px;
+  font-size: 11px;
+  color: #8d8d8d;
+}
+
+/* آیکون چشم نمایش/مخفی‌سازی رمز عبور */
+.nias-main-modal .nsinput-field.nias-has-toggle input[type="password"],
+.nias-main-modal .nsinput-field.nias-has-toggle input[type="text"] {
+  padding-left: 42px;
+}
+
+.nias-main-modal .nsinput-field .nias-pass-toggle {
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 30px !important;
+  height: 30px !important;
+  min-height: 0 !important;
+  background: none !important;
+  border: none !important;
+  border-radius: 0 !important;
+  padding: 4px !important;
+  margin: 0 !important;
+  cursor: pointer;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  color: #8d8d8d !important;
+  fill: currentColor !important;
+  line-height: 0;
+  z-index: 2;
+}
+
+.nias-main-modal .nsinput-field .nias-pass-toggle:hover {
+  color: #0034de !important;
+}
+
+.nias-main-modal .nsinput-field .nias-pass-toggle svg {
+  width: 20px !important;
+  height: 20px !important;
+  display: block !important;
+}
+
+/* دکمه ورود با گوگل — تمام‌عرض، زیر دکمه‌های تایید/اصلاح */
+.nias-main-modal .nias-google-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 12px;
+  padding: 11px 16px;
+  background: #fff;
+  color: #3c4043;
+  border: 1px solid #dadce0;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.15s, box-shadow 0.15s, border-color 0.15s;
+}
+
+.nias-main-modal .nias-google-btn:hover {
+  background: #f7f8fa;
+  border-color: #c6c9ce;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+.nias-main-modal .nias-google-btn svg {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+}
+
+.nias-main-modal .nias-google-btn span {
+  line-height: 1;
+}
+
+.nias-phone-box input,
+.nias-code-box input {
+    font-size: 16px !important;
+}
+p.nias-subtitle {
+    margin-bottom: 10px;
+}

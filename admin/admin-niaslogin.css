@@ -1,0 +1,1353 @@
+﻿/* ============================================================
+   NIAS Login — Admin Settings (design: nias-admin/Nias Settings.html)
+   RTL Persian · Vazirmatn · 3 visual directions via [data-dir]
+   A = Aurora (dark navy / indigo) — default
+   B = Daylight (light, airy)
+   C = Graphite (charcoal neutral, violet, sharp)
+   Everything is scoped under .nias-login-admin so nothing leaks into
+   the rest of wp-admin.
+   ============================================================ */
+
+/* ---------- shared scalars ---------- */
+.nias-login-admin {
+  --rail-w: 78px;
+  --rail-w-open: 252px;
+  --topbar-h: 64px;
+
+  --success: #34d399;
+  --danger:  #f87171;
+  --warn:    #fbbf24;
+  --info:    #60a5fa;
+
+  --mono: "JetBrains Mono", "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+
+/* ============================================================
+   DIRECTION A — Aurora (dark navy) — default
+   ============================================================ */
+.nias-login-admin,
+.nias-login-admin[data-dir="a"] {
+  --bg:            #0b0d1a;
+  --bg-glow-1:     rgba(99,102,241,0.16);
+  --bg-glow-2:     rgba(167,139,250,0.14);
+  --rail-bg:       rgba(18,21,42,0.72);
+  --topbar-bg:     rgba(12,14,28,0.78);
+  --surface:       #14172b;
+  --surface-2:     #1a1e38;
+  --surface-3:     #20254a;
+  --border:        rgba(255,255,255,0.08);
+  --border-soft:   rgba(255,255,255,0.05);
+  --border-strong: rgba(129,140,248,0.30);
+  --text:          #e9eaf7;
+  --text-muted:    #a6acd4;
+  --text-faint:    #6a6f9c;
+  --accent:        #6366f1;
+  --accent-2:      #818cf8;
+  --accent-soft:   rgba(99,102,241,0.14);
+  --accent-line:   rgba(99,102,241,0.45);
+  --on-accent:     #ffffff;
+  --input-bg:      #0f1228;
+  --radius:        16px;
+  --radius-sm:     10px;
+  --radius-xs:     8px;
+  --shadow:        0 16px 40px rgba(0,0,0,0.40);
+  --shadow-sm:     0 6px 18px rgba(0,0,0,0.30);
+  --card-grad:     linear-gradient(160deg, rgba(255,255,255,0.035), rgba(99,102,241,0.045));
+  --glass:         saturate(140%) blur(14px);
+}
+
+/* ============================================================
+   DIRECTION B — Daylight (light)
+   ============================================================ */
+.nias-login-admin[data-dir="b"] {
+  --bg:            #eceefa;
+  --bg-glow-1:     rgba(91,94,240,0.10);
+  --bg-glow-2:     rgba(124,127,245,0.10);
+  --rail-bg:       rgba(255,255,255,0.92);
+  --topbar-bg:     rgba(255,255,255,0.82);
+  --surface:       #ffffff;
+  --surface-2:     #f4f5fc;
+  --surface-3:     #eceefa;
+  --border:        rgba(28,33,68,0.10);
+  --border-soft:   rgba(28,33,68,0.06);
+  --border-strong: rgba(91,94,240,0.32);
+  --text:          #1b2038;
+  --text-muted:    #565d82;
+  --text-faint:    #9097ba;
+  --accent:        #5b5ef0;
+  --accent-2:      #7c7ff5;
+  --accent-soft:   rgba(91,94,240,0.09);
+  --accent-line:   rgba(91,94,240,0.30);
+  --on-accent:     #ffffff;
+  --input-bg:      #f4f5fc;
+  --radius:        14px;
+  --radius-sm:     10px;
+  --radius-xs:     8px;
+  --shadow:        0 18px 44px rgba(40,44,90,0.12);
+  --shadow-sm:     0 8px 22px rgba(40,44,90,0.08);
+  --card-grad:     none;
+  --glass:         saturate(120%) blur(12px);
+}
+
+/* ============================================================
+   DIRECTION C — Graphite (neutral charcoal, violet, sharp)
+   ============================================================ */
+.nias-login-admin[data-dir="c"] {
+  --bg:            #121317;
+  --bg-glow-1:     rgba(167,139,250,0.07);
+  --bg-glow-2:     rgba(167,139,250,0.05);
+  --rail-bg:       #17181c;
+  --topbar-bg:     rgba(18,19,23,0.92);
+  --surface:       #191b1f;
+  --surface-2:     #202329;
+  --surface-3:     #282c33;
+  --border:        rgba(255,255,255,0.10);
+  --border-soft:   rgba(255,255,255,0.06);
+  --border-strong: rgba(167,139,250,0.45);
+  --text:          #ededee;
+  --text-muted:    #9fa1aa;
+  --text-faint:    #6b6e78;
+  --accent:        #a78bfa;
+  --accent-2:      #c4b5fd;
+  --accent-soft:   rgba(167,139,250,0.12);
+  --accent-line:   rgba(167,139,250,0.5);
+  --on-accent:     #16121f;
+  --input-bg:      #131418;
+  --radius:        6px;
+  --radius-sm:     5px;
+  --radius-xs:     4px;
+  --shadow:        0 0 0 1px var(--border);
+  --shadow-sm:     none;
+  --card-grad:     none;
+  --glass:         blur(10px);
+}
+
+/* ============================================================
+   APP SHELL  (adapted for wp-admin: internal-scroll nias-login-panel)
+   ============================================================ */
+.nias-login-admin {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 52px);
+  margin: 8px 12px 20px 20px;
+  border-radius: 18px;
+  background: var(--bg);
+  color: var(--text);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  font-family: "Vazirmatn", Tahoma, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  direction: rtl;
+}
+.nias-login-admin *,
+.nias-login-admin *::before,
+.nias-login-admin *::after { box-sizing: border-box; }
+
+.nias-login-admin::before { /* ambient glows */
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    radial-gradient(620px 420px at 88% -8%, var(--bg-glow-1), transparent 60%),
+    radial-gradient(560px 460px at 6% 108%, var(--bg-glow-2), transparent 60%);
+  z-index: 0;
+}
+
+.nias-login-admin > form { display: contents; }
+
+/* ---------- TOPBAR ---------- */
+.nias-login-admin .nias-login-topbar {
+  position: relative;
+  z-index: 50;
+  height: var(--topbar-h);
+  flex: 0 0 var(--topbar-h);
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 0 22px;
+  background: var(--topbar-bg);
+  -webkit-backdrop-filter: var(--glass);
+  backdrop-filter: var(--glass);
+  border-bottom: 1px solid var(--border);
+}
+.nias-login-admin .nias-login-brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.nias-login-admin .nias-login-brand__mark {
+  width: 38px; height: 38px;
+  border-radius: var(--radius-sm);
+  display: grid; place-items: center;
+  background: #fff;
+  flex: 0 0 auto;
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  padding: 3px;
+}
+.nias-login-admin .nias-login-brand__mark img { width: 32px; height: 32px; object-fit: contain; display: block; }
+.nias-login-admin .nias-login-brand__text { display: flex; flex-direction: column; line-height: 1.25; }
+.nias-login-admin .nias-login-brand__title { font-weight: 800; font-size: 15px; letter-spacing: -0.01em; }
+.nias-login-admin .nias-login-brand__sub { font-size: 11px; color: var(--text-faint); font-weight: 500; }
+.nias-login-admin .nias-login-topbar__spacer { flex: 1; }
+
+/* segmented direction switcher */
+.nias-login-admin .nias-login-dirswitch {
+  display: flex; align-items: center; gap: 3px;
+  padding: 4px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius-sm) + 3px);
+}
+.nias-login-admin .nias-login-dirswitch__btn {
+  appearance: none;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-muted);
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 700;
+  padding: 7px 14px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: flex; align-items: center; gap: 7px;
+  transition: all .18s ease;
+  white-space: nowrap;
+}
+.nias-login-admin .nias-login-dirswitch__btn:hover { color: var(--text); }
+.nias-login-admin .nias-login-dirswitch__dot {
+  width: 11px; height: 11px; border-radius: 50%;
+  border: 2px solid currentColor; flex: 0 0 auto;
+}
+.nias-login-admin .nias-login-dirswitch__btn[aria-pressed="true"] {
+  background: var(--accent);
+  color: var(--on-accent);
+  border-color: var(--accent);
+  box-shadow: var(--shadow-sm);
+}
+.nias-login-admin .nias-login-dirswitch__btn[aria-pressed="true"] .nias-login-dirswitch__dot {
+  background: var(--on-accent); border-color: var(--on-accent);
+}
+
+/* nias-login-topbar icon buttons */
+.nias-login-admin .nias-login-iconbtn {
+  position: relative;
+  appearance: none;
+  width: 42px; height: 42px;
+  display: grid; place-items: center;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all .18s ease;
+}
+.nias-login-admin .nias-login-iconbtn:hover { color: var(--text); border-color: var(--border-strong); }
+.nias-login-admin .nias-login-iconbtn svg { width: 19px; height: 19px; }
+.nias-login-admin .nias-login-iconbtn__dot {
+  position: absolute; top: 9px; right: 9px;
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--danger);
+  box-shadow: 0 0 0 2px var(--topbar-bg);
+}
+
+.nias-login-admin .nias-login-btn-save {
+  appearance: none;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: 13.5px;
+  color: var(--on-accent);
+  background: linear-gradient(140deg, var(--accent), var(--accent-2));
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 11px 20px;
+  cursor: pointer;
+  display: flex; align-items: center; gap: 8px;
+  box-shadow: var(--shadow-sm);
+  transition: transform .15s ease, filter .15s ease;
+}
+.nias-login-admin .nias-login-btn-save svg { width: 17px; height: 17px; }
+.nias-login-admin .nias-login-btn-save:hover { filter: brightness(1.07); }
+.nias-login-admin .nias-login-btn-save:active { transform: scale(.97); }
+
+/* ---------- BODY + RAIL ---------- */
+.nias-login-admin .nias-login-body {
+  position: relative;
+  z-index: 10;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+}
+.nias-login-admin .nias-login-main {
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  margin-right: var(--rail-w);
+  transition: margin-right .24s cubic-bezier(.4,0,.2,1);
+  padding: 30px 34px 80px;
+  scroll-behavior: smooth;
+}
+.nias-login-admin.nias-login-rail-pinned .nias-login-main { margin-right: var(--rail-w-open); }
+
+/* nias-login-rail sits on the RIGHT (RTL), overlays nias-login-main when hover-expanded */
+.nias-login-admin .nias-login-rail {
+  position: absolute;
+  inset-block: 0;
+  right: 0;
+  width: var(--rail-w);
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  background: var(--rail-bg);
+  -webkit-backdrop-filter: var(--glass);
+  backdrop-filter: var(--glass);
+  border-left: 1px solid var(--border);
+  overflow: hidden;
+  transition: width .24s cubic-bezier(.4,0,.2,1), box-shadow .24s;
+}
+.nias-login-admin .nias-login-rail:hover,
+.nias-login-admin.nias-login-rail-pinned .nias-login-rail { width: var(--rail-w-open); }
+.nias-login-admin:not(.nias-login-rail-pinned) .nias-login-rail:hover { box-shadow: -18px 0 50px rgba(0,0,0,0.28); }
+
+.nias-login-admin .nias-login-rail__top {
+  display: flex; align-items: center; justify-content: flex-end;
+  height: 58px;
+  padding: 0 18px 0 14px;
+  flex: 0 0 auto;
+}
+.nias-login-admin .nias-login-rail__pin {
+  appearance: none;
+  width: 36px; height: 36px;
+  display: grid; place-items: center;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text-muted);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all .18s;
+  flex: 0 0 auto;
+}
+.nias-login-admin .nias-login-rail__pin:hover { color: var(--text); border-color: var(--border-strong); }
+.nias-login-admin .nias-login-rail__pin svg { width: 17px; height: 17px; transition: transform .24s; }
+.nias-login-admin.nias-login-rail-pinned .nias-login-rail__pin { background: var(--accent-soft); color: var(--accent); border-color: var(--accent-line); }
+.nias-login-admin.nias-login-rail-pinned .nias-login-rail__pin svg { transform: rotate(180deg); }
+
+.nias-login-admin .nias-login-rail__nav {
+  flex: 1;
+  overflow-y: auto; overflow-x: hidden;
+  padding: 6px 14px 18px;
+  display: flex; flex-direction: column; gap: 5px;
+}
+.nias-login-admin .nias-login-rail__group-label {
+  font-size: 10.5px; font-weight: 800; letter-spacing: .08em;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  padding: 14px 12px 4px;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity .18s;
+}
+.nias-login-admin .nias-login-rail:hover .nias-login-rail__group-label,
+.nias-login-admin.nias-login-rail-pinned .nias-login-rail__group-label { opacity: 1; }
+
+.nias-login-admin .nias-login-navitem {
+  appearance: none;
+  width: 100%;
+  display: flex; align-items: center; gap: 14px;
+  padding: 11px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-muted);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  text-align: right;
+  transition: all .16s ease;
+  white-space: nowrap;
+  position: relative;
+}
+.nias-login-admin .nias-login-navitem__icon {
+  flex: 0 0 24px; width: 24px; height: 24px;
+  display: grid; place-items: center;
+}
+.nias-login-admin .nias-login-navitem__icon svg { width: 21px; height: 21px; }
+.nias-login-admin .nias-login-navitem__label {
+  opacity: 0;
+  transform: translateX(6px);
+  transition: opacity .16s, transform .16s;
+}
+.nias-login-admin .nias-login-rail:hover .nias-login-navitem__label,
+.nias-login-admin.nias-login-rail-pinned .nias-login-navitem__label { opacity: 1; transform: none; }
+
+.nias-login-admin .nias-login-navitem:hover { background: var(--surface-2); color: var(--text); }
+.nias-login-admin .nias-login-navitem.active {
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-color: var(--accent-line);
+}
+.nias-login-admin .nias-login-navitem.active::before {
+  content: "";
+  position: absolute;
+  right: -14px; top: 50%;
+  transform: translateY(-50%);
+  width: 3px; height: 22px;
+  border-radius: 3px 0 0 3px;
+  background: var(--accent);
+}
+
+/* scrollbars */
+.nias-login-admin .nias-login-main::-webkit-scrollbar,
+.nias-login-admin .nias-login-rail__nav::-webkit-scrollbar { width: 9px; }
+.nias-login-admin .nias-login-main::-webkit-scrollbar-thumb,
+.nias-login-admin .nias-login-rail__nav::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 6px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+/* ============================================================
+   PAGE HEAD + PANELS
+   ============================================================ */
+.nias-login-admin .nias-login-page-head {
+  display: flex; align-items: flex-start; gap: 16px;
+  margin-bottom: 26px;
+}
+.nias-login-admin .nias-login-page-head__icon {
+  width: 50px; height: 50px; flex: 0 0 auto;
+  border-radius: var(--radius-sm);
+  display: grid; place-items: center;
+  background: var(--accent-soft);
+  color: var(--accent);
+  border: 1px solid var(--accent-line);
+}
+.nias-login-admin .nias-login-page-head__icon svg { width: 26px; height: 26px; }
+.nias-login-admin .nias-login-page-head__title { margin: 0; font-size: 23px; font-weight: 800; letter-spacing: -0.02em; color: var(--text); }
+.nias-login-admin .nias-login-page-head__desc { margin: 5px 0 0; color: var(--text-muted); font-size: 14px; line-height: 1.6; max-width: 70ch; }
+
+.nias-login-admin .nias-login-panel { display: none; animation: niasPanelIn .32s ease; }
+.nias-login-admin .nias-login-panel.active { display: block; }
+@keyframes niasPanelIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* responsive nias-login-grid of cards */
+.nias-login-admin .nias-login-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+.nias-login-admin .nias-login-grid--1 { display: grid; grid-template-columns: minmax(0,1fr); gap: 18px; }
+.nias-login-admin .nias-login-span-2 { grid-column: 1 / -1; }
+@media (max-width: 1100px) {
+  .nias-login-admin .nias-login-grid { grid-template-columns: minmax(0,1fr); }
+  .nias-login-admin .nias-login-span-2 { grid-column: auto; }
+}
+
+/* ---------- nias-login-card ---------- */
+.nias-login-admin .nias-login-card {
+  background: var(--surface);
+  background-image: var(--card-grad);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+.nias-login-admin .nias-login-card__head {
+  display: flex; align-items: center; gap: 12px;
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--border-soft);
+}
+.nias-login-admin .nias-login-card__head-icon {
+  width: 34px; height: 34px; flex: 0 0 auto;
+  display: grid; place-items: center;
+  border-radius: var(--radius-xs);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.nias-login-admin .nias-login-card__head-icon svg { width: 19px; height: 19px; }
+.nias-login-admin .nias-login-card__titles { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.nias-login-admin .nias-login-card__title { font-size: 15px; font-weight: 800; letter-spacing: -0.01em; }
+.nias-login-admin .nias-login-card__sub { font-size: 12.5px; color: var(--text-faint); }
+.nias-login-admin .nias-login-card__body { padding: 20px; display: flex; flex-direction: column; gap: 4px; }
+
+.nias-login-admin .nias-login-divider { height: 1px; background: var(--border-soft); margin: 16px 0; border: 0; }
+
+.nias-login-admin .nias-login-section-label {
+  font-size: 12px; font-weight: 800; letter-spacing: .04em;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  margin: 8px 0 4px;
+  display: block;
+}
+
+/* ---------- nias-login-field row ---------- */
+.nias-login-admin .nias-login-field {
+  display: flex; align-items: center; gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border-soft);
+}
+.nias-login-admin .nias-login-field:last-child { border-bottom: 0; }
+.nias-login-admin .nias-login-field__main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.nias-login-admin .nias-login-field__label { font-size: 14px; font-weight: 700; }
+.nias-login-admin .nias-login-field__hint { font-size: 12.5px; color: var(--text-faint); line-height: 1.6; }
+.nias-login-admin .nias-login-field__control { flex: 0 0 auto; }
+
+/* stacked nias-login-field (label above nias-login-input full width) */
+.nias-login-admin .nias-login-field-stack {
+  display: flex; flex-direction: column; gap: 8px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border-soft);
+}
+.nias-login-admin .nias-login-field-stack:last-child { border-bottom: 0; }
+.nias-login-admin .nias-login-field-stack__label { font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+.nias-login-admin .nias-login-field-stack__hint { font-size: 12.5px; color: var(--text-faint); line-height: 1.6; }
+
+.nias-login-admin .nias-login-tag-var {
+  font-family: var(--mono); font-size: 11px;
+  background: var(--accent-soft); color: var(--accent);
+  padding: 2px 7px; border-radius: 5px; direction: ltr;
+}
+
+/* ---------- toggle switch ---------- */
+/* position:fixed keeps the hidden input out of every stacking context so it
+   never causes reflow in sibling/cousin elements (grid items, flex rows) */
+.nias-login-admin .nias-login-toggle-input { position: fixed; opacity: 0; width: 0; height: 0; margin: 0; pointer-events: none; }
+.nias-login-admin .nias-login-toggle {
+  position: relative;
+  display: inline-block;
+  width: 54px; height: 30px;
+  cursor: pointer;
+  flex: 0 0 auto;
+  margin: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+.nias-login-admin .nias-login-toggle::before {
+  content: "";
+  position: absolute; inset: 0;
+  background: var(--surface-3);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  transition: background .22s ease, border-color .22s;
+}
+.nias-login-admin .nias-login-toggle .nias-login-knob {
+  position: absolute;
+  top: 3px; right: 3px;
+  width: 24px; height: 24px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+  display: grid; place-items: center;
+  transition: transform .22s cubic-bezier(.4,0,.2,1);
+}
+.nias-login-admin .nias-login-toggle .nias-login-knob svg { width: 12px; height: 12px; fill: none; }
+.nias-login-admin .nias-login-toggle .nias-login-knob svg path {
+  stroke: var(--text-faint);
+  stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+  stroke-dasharray: 24; stroke-dashoffset: 0;
+  transition: all .4s linear;
+}
+.nias-login-admin .nias-login-toggle-input:checked + .nias-login-toggle::before {
+  background: var(--accent); border-color: var(--accent);
+}
+.nias-login-admin .nias-login-toggle-input:checked + .nias-login-toggle .nias-login-knob { transform: translateX(-24px); }
+.nias-login-admin .nias-login-toggle-input:checked + .nias-login-toggle .nias-login-knob svg path {
+  stroke: var(--accent);
+  stroke-dasharray: 25; stroke-dashoffset: 25;
+}
+.nias-login-admin .nias-login-toggle-input:focus-visible + .nias-login-toggle::before { box-shadow: 0 0 0 3px var(--accent-soft); }
+
+/* ---------- two-way binary toggle ---------- */
+.nias-login-admin .nias-login-two-way {
+  display: inline-flex; align-items: center; gap: 10px;
+}
+.nias-login-admin .nias-login-two-way__a,
+.nias-login-admin .nias-login-two-way__b {
+  font-size: 13px; font-weight: 700;
+  color: var(--text-faint);
+  transition: color .2s;
+  white-space: nowrap;
+  cursor: pointer;
+}
+/* active label follows knob position (RTL: A=right=off, B=left=on) */
+.nias-login-admin .nias-login-two-way:has(.nias-login-toggle-input:not(:checked)) .nias-login-two-way__a { color: var(--text); }
+.nias-login-admin .nias-login-two-way:has(.nias-login-toggle-input:checked) .nias-login-two-way__b { color: var(--accent); }
+
+/* ---------- text nias-login-input ---------- */
+.nias-login-admin .nias-login-input,
+.nias-login-admin .nias-login-textarea,
+.nias-login-admin .nias-login-select,
+.nias-login-admin .nias-login-card__body input[type="text"],
+.nias-login-admin .nias-login-card__body input[type="number"],
+.nias-login-admin .nias-login-card__body input[type="password"],
+.nias-login-admin .nias-login-card__body input[type="email"],
+.nias-login-admin .nias-login-card__body input[type="url"],
+.nias-login-admin .nias-login-card__body textarea,
+.nias-login-admin .nias-login-card__body select {
+  width: 100%;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--text);
+  background: var(--input-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 11px 14px;
+  transition: border-color .16s, box-shadow .16s;
+  outline: none;
+  min-height: 0;
+  line-height: 1.5;
+  box-shadow: none;
+}
+.nias-login-admin .nias-login-input::placeholder,
+.nias-login-admin .nias-login-textarea::placeholder,
+.nias-login-admin .nias-login-card__body nias-login-input::placeholder,
+.nias-login-admin .nias-login-card__body textarea::placeholder { color: var(--text-faint); }
+.nias-login-admin .nias-login-input:focus,
+.nias-login-admin .nias-login-textarea:focus,
+.nias-login-admin .nias-login-select:focus,
+.nias-login-admin .nias-login-card__body nias-login-input:focus,
+.nias-login-admin .nias-login-card__body textarea:focus,
+.nias-login-admin .nias-login-card__body select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.nias-login-admin .nias-login-input--sm { width: 130px; max-width: 100%; }
+.nias-login-admin .nias-login-input--mono { font-family: var(--mono); direction: ltr; text-align: left; }
+.nias-login-admin .nias-login-textarea { resize: vertical; min-height: 120px; line-height: 1.6; }
+
+/* ---------- color grid ---------- */
+.nias-login-admin .nias-login-color-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 14px;
+  padding: 4px 0 14px;
+}
+.nias-login-admin .nias-login-color-field {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  cursor: pointer;
+}
+.nias-login-admin .nias-login-color-field__label { font-size: 13px; font-weight: 700; }
+.nias-login-admin .nias-login-color {
+  -webkit-appearance: none; appearance: none;
+  width: 40px; height: 32px; flex: 0 0 auto;
+  padding: 0; border: 1px solid var(--border); border-radius: var(--radius-sm);
+  background: var(--input-bg); cursor: pointer;
+}
+.nias-login-admin .nias-login-color::-webkit-color-swatch-wrapper { padding: 3px; }
+.nias-login-admin .nias-login-color::-webkit-color-swatch { border: none; border-radius: 4px; }
+.nias-login-admin .nias-login-color::-moz-color-swatch { border: none; border-radius: 4px; }
+
+/* ---------- size grid ---------- */
+.nias-login-admin .nias-login-size-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 14px;
+  padding: 4px 0 14px;
+}
+.nias-login-admin .nias-login-size-field { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.nias-login-admin .nias-login-size-field label { font-size: 13px; font-weight: 700; }
+.nias-login-admin .nias-login-size-field .nias-login-input--sm { width: 90px; }
+
+/* ---------- modal text fields grid ---------- */
+.nias-login-admin .nias-login-text-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 14px;
+  padding: 4px 0 14px;
+}
+.nias-login-admin .nias-login-text-field { display: flex; flex-direction: column; gap: 6px; }
+.nias-login-admin .nias-login-text-field label { font-size: 13px; font-weight: 700; }
+.nias-login-admin .nias-login-section-label--sub {
+  text-transform: none;
+  margin-top: 14px;
+  color: var(--text-soft, var(--text-faint));
+}
+
+.nias-login-admin .nias-login-input-wrap { position: relative; display: flex; align-items: center; }
+.nias-login-admin .nias-login-input-wrap .nias-login-input { padding-left: 42px; }
+.nias-login-admin .nias-login-input-eye {
+  position: absolute; left: 6px;
+  width: 30px; height: 30px;
+  display: grid; place-items: center;
+  background: transparent; border: none; cursor: pointer;
+  color: var(--text-faint); border-radius: 6px;
+}
+.nias-login-admin .nias-login-input-eye:hover { color: var(--text); background: var(--surface-2); }
+.nias-login-admin .nias-login-input-eye svg { width: 17px; height: 17px; }
+
+.nias-login-admin .nias-login-select {
+  appearance: none;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: left 14px center;
+  padding-left: 40px;
+}
+
+/* ---------- radio cards ---------- */
+.nias-login-admin .nias-login-radio-cards { display: flex; flex-direction: column; gap: 10px; }
+.nias-login-admin .nias-login-radio-cards.row { flex-direction: row; flex-wrap: wrap; }
+.nias-login-admin .nias-login-radio-card {
+  position: relative;
+  display: flex; align-items: center; gap: 13px;
+  padding: 14px 16px;
+  border: 1.5px solid var(--border);
+  background: var(--surface-2);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all .16s;
+  flex: 1 1 220px;
+  margin: 0;
+}
+.nias-login-admin .nias-login-radio-card:hover { border-color: var(--border-strong); }
+.nias-login-admin .nias-login-radio-card nias-login-input { position: absolute; opacity: 0; }
+.nias-login-admin .nias-login-radio-card__dot {
+  width: 18px; height: 18px; flex: 0 0 auto;
+  border-radius: 50%;
+  border: 2px solid var(--text-faint);
+  display: grid; place-items: center;
+  transition: border-color .16s;
+}
+.nias-login-admin .nias-login-radio-card__dot::after {
+  content: ""; width: 8px; height: 8px; border-radius: 50%;
+  background: var(--accent); transform: scale(0); transition: transform .16s;
+}
+.nias-login-admin .nias-login-radio-card__txt { display: flex; flex-direction: column; gap: 2px; }
+.nias-login-admin .nias-login-radio-card__title { font-size: 14px; font-weight: 700; }
+.nias-login-admin .nias-login-radio-card__desc { font-size: 12px; color: var(--text-faint); }
+.nias-login-admin .nias-login-radio-card nias-login-input:checked ~ .nias-login-radio-card__dot { border-color: var(--accent); }
+.nias-login-admin .nias-login-radio-card nias-login-input:checked ~ .nias-login-radio-card__dot::after { transform: scale(1); }
+.nias-login-admin .nias-login-radio-card:has(nias-login-input:checked) {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+/* ---------- buttons ---------- */
+.nias-login-admin .nias-login-btn {
+  appearance: none;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 700;
+  padding: 10px 18px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: inline-flex; align-items: center; gap: 8px;
+  transition: all .16s;
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: var(--on-accent);
+  text-decoration: none;
+  line-height: 1.4;
+}
+.nias-login-admin .nias-login-btn svg { width: 16px; height: 16px; }
+.nias-login-admin .nias-login-btn:hover { filter: brightness(1.07); }
+.nias-login-admin .nias-login-btn:active { transform: scale(.97); }
+.nias-login-admin .nias-login-btn--ghost { background: var(--surface-2); color: var(--text); border-color: var(--border); }
+.nias-login-admin .nias-login-btn--ghost:hover { border-color: var(--border-strong); filter: none; }
+.nias-login-admin .nias-login-btn--danger { background: var(--danger); border-color: var(--danger); color: #fff; }
+.nias-login-admin .nias-login-btn[disabled] { opacity: .55; cursor: not-allowed; }
+
+/* ---------- info / nias-login-note boxes ---------- */
+.nias-login-admin .nias-login-note {
+  display: flex; gap: 12px;
+  padding: 14px 16px;
+  border-radius: var(--radius-sm);
+  background: var(--accent-soft);
+  border: 1px solid var(--accent-line);
+  font-size: 13px; line-height: 1.7;
+  color: var(--text-muted);
+}
+.nias-login-admin .nias-login-note svg { width: 18px; height: 18px; flex: 0 0 auto; color: var(--accent); margin-top: 2px; }
+.nias-login-admin .nias-login-note--warn { background: rgba(251,191,36,0.10); border-color: rgba(251,191,36,0.30); }
+.nias-login-admin .nias-login-note--warn svg { color: var(--warn); }
+.nias-login-admin .nias-login-note--success { background: rgba(52,211,153,0.10); border-color: rgba(52,211,153,0.30); }
+.nias-login-admin .nias-login-note--success svg { color: var(--success); }
+.nias-login-admin .nias-login-note code, .nias-login-admin .nias-login-note strong { color: var(--text); }
+.nias-login-admin .nias-login-note code { font-family: var(--mono); font-size: 12px; background: var(--surface-3); padding: 1px 6px; border-radius: 4px; direction: ltr; }
+.nias-login-admin .nias-login-note ul { margin: 6px 0 0; padding-right: 18px; display: flex; flex-direction: column; gap: 4px; }
+.nias-login-admin .nias-login-note a { color: var(--accent); }
+.nias-login-admin .nias-login-note__body { display: flex; flex-direction: column; gap: 2px; }
+
+/* code preview nias-login-chip */
+.nias-login-admin .nias-login-codechip {
+  font-family: var(--mono);
+  direction: ltr; text-align: left;
+  background: var(--input-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  font-size: 14px;
+  color: var(--accent-2);
+  letter-spacing: .04em;
+  word-break: break-all;
+  margin: 0;
+  display: block;
+}
+
+/* ---------- conditional nias-login-reveal ---------- */
+.nias-login-admin .nias-login-reveal { overflow: hidden; }
+.nias-login-admin [hidden] { display: none !important; }
+
+/* sub-panel (nested settings group) */
+.nias-login-admin .nias-login-subpanel {
+  margin-top: 6px;
+  padding: 16px 18px;
+  background: var(--surface-2);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-sm);
+  display: flex; flex-direction: column; gap: 4px;
+}
+.nias-login-admin .nias-login-subpanel__title { font-size: 14px; font-weight: 800; margin: 0 0 4px; }
+
+/* checkbox nias-login-grid */
+.nias-login-admin .nias-login-checkgrid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+@media (max-width:600px){ .nias-login-admin .nias-login-checkgrid { grid-template-columns: 1fr; } }
+.nias-login-admin .nias-login-checkrow {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-xs); cursor: pointer; font-size: 13.5px;
+  margin: 0;
+}
+.nias-login-admin .nias-login-checkrow nias-login-input[type="checkbox"],
+.nias-login-admin .nias-login-chip nias-login-input[type="checkbox"] {
+  width: 17px; height: 17px; accent-color: var(--accent); margin: 0;
+}
+
+/* ---------- tables ---------- */
+.nias-login-admin .nias-login-table-wrap {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  /* سرستون‌ها nowrap هستند؛ با overflow:hidden روی صفحه باریک ستون‌های آخر
+     بریده می‌شدند و راهی برای دیدنشان نبود. حالا خودِ جدول اسکرول افقی دارد. */
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+.nias-login-admin .nias-login-table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 0; }
+.nias-login-admin .nias-login-table th {
+  text-align: right; font-weight: 700; color: var(--text-muted);
+  padding: 12px 14px;
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+.nias-login-admin .nias-login-table td {
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--border-soft);
+  color: var(--text);
+}
+.nias-login-admin .nias-login-table tr:last-child td { border-bottom: 0; }
+.nias-login-admin .nias-login-table tbody tr:hover { background: var(--surface-2); }
+.nias-login-admin .nias-login-mono { font-family: var(--mono); direction: ltr; font-size: 12px; }
+
+/* badges */
+.nias-login-admin .nias-login-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11.5px; font-weight: 700;
+  padding: 3px 9px; border-radius: 20px;
+  background: var(--accent-soft); color: var(--accent);
+}
+.nias-login-admin .nias-login-badge--green  { background: rgba(52,211,153,0.14); color: var(--success); }
+.nias-login-admin .nias-login-badge--purple { background: rgba(167,139,250,0.16); color: #a78bfa; }
+.nias-login-admin .nias-login-badge--red    { background: rgba(248,113,113,0.14); color: var(--danger); }
+.nias-login-admin .nias-login-badge--orange { background: rgba(251,191,36,0.14); color: var(--warn); }
+.nias-login-admin .nias-login-badge--blue   { background: rgba(96,165,250,0.14); color: var(--info); }
+
+/* ============================================================
+   DASHBOARD
+   ============================================================ */
+.nias-login-admin .nias-login-stat-cards {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0,1fr));
+  gap: 16px;
+  margin-bottom: 22px;
+}
+@media (max-width:1200px){ .nias-login-admin .nias-login-stat-cards { grid-template-columns: repeat(3,1fr); } }
+@media (max-width:680px){ .nias-login-admin .nias-login-stat-cards { grid-template-columns: repeat(2,1fr); } }
+
+.nias-login-admin .nias-login-stat {
+  position: relative;
+  background: var(--surface);
+  background-image: var(--card-grad);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+  display: flex; flex-direction: column; gap: 12px;
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+.nias-login-admin .nias-login-stat__icon {
+  width: 40px; height: 40px;
+  border-radius: var(--radius-xs);
+  display: grid; place-items: center;
+}
+.nias-login-admin .nias-login-stat__icon svg { width: 21px; height: 21px; }
+.nias-login-admin .nias-login-stat__value { font-size: 28px; font-weight: 800; letter-spacing: -0.02em; line-height: 1; }
+.nias-login-admin .nias-login-stat__label { font-size: 12.5px; color: var(--text-faint); font-weight: 600; }
+.nias-login-admin .nias-login-stat__badge {
+  position: absolute; top: 16px; left: 16px;
+  font-size: 11px; font-weight: 800;
+  padding: 3px 8px; border-radius: 20px;
+  background: rgba(52,211,153,0.14); color: var(--success);
+}
+.nias-login-admin .nias-login-stat--blue   .nias-login-stat__icon { background: rgba(96,165,250,0.14);  color: var(--info); }
+.nias-login-admin .nias-login-stat--green  .nias-login-stat__icon { background: rgba(52,211,153,0.14);  color: var(--success); }
+.nias-login-admin .nias-login-stat--purple .nias-login-stat__icon { background: rgba(167,139,250,0.16); color: #a78bfa; }
+.nias-login-admin .nias-login-stat--orange .nias-login-stat__icon { background: rgba(251,191,36,0.14);  color: var(--warn); }
+.nias-login-admin .nias-login-stat--red    .nias-login-stat__icon { background: rgba(248,113,113,0.14); color: var(--danger); }
+
+.nias-login-admin .nias-login-dash-row { display: grid; gap: 18px; margin-bottom: 18px; }
+.nias-login-admin .nias-login-dash-row--wide { grid-template-columns: 2fr 1fr; }
+.nias-login-admin .nias-login-dash-row--half { grid-template-columns: 1fr 1fr; }
+@media (max-width:1000px){
+  .nias-login-admin .nias-login-dash-row--wide,
+  .nias-login-admin .nias-login-dash-row--half { grid-template-columns: 1fr; }
+}
+
+.nias-login-admin .nias-login-chartbox {
+  background: var(--surface);
+  background-image: var(--card-grad);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  box-shadow: var(--shadow-sm);
+  min-width: 0;
+}
+.nias-login-admin .nias-login-chartbox__head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.nias-login-admin .nias-login-chartbox__title { font-size: 14.5px; font-weight: 800; }
+.nias-login-admin .nias-login-legend { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--text-muted); }
+.nias-login-admin .nias-login-legend__dot { width: 9px; height: 9px; border-radius: 50%; }
+.nias-login-admin .nias-login-donut-wrap { position: relative; display: grid; place-items: center; }
+.nias-login-admin .nias-login-donut-center {
+  position: absolute; inset: 0;
+  display: grid; place-content: center; place-items: center; text-align: center;
+  pointer-events: none;
+}
+.nias-login-admin .nias-login-donut-center span { font-size: 26px; font-weight: 800; display: block; line-height: 1; }
+.nias-login-admin .nias-login-donut-center small { font-size: 11px; color: var(--text-faint); }
+.nias-login-admin canvas { max-width: 100%; }
+
+/* fastsell sortable rows */
+.nias-login-admin .nias-login-fs-head,
+.nias-login-admin .nias-login-fs-row {
+  display: grid;
+  grid-template-columns: 36px 1fr 90px 90px;
+  align-items: center;
+  gap: 10px;
+}
+.nias-login-admin .nias-login-fs-head { padding: 0 14px 10px; font-size: 12px; font-weight: 800; color: var(--text-faint); }
+.nias-login-admin .nias-login-fs-list { display: flex; flex-direction: column; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.nias-login-admin .nias-login-fs-row {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  list-style: none;
+  margin: 0;
+}
+.nias-login-admin .nias-login-fs-row.dragging { opacity: .5; border-style: dashed; }
+.nias-login-admin .nias-fastsell-sort-placeholder {
+  border: 1px dashed var(--accent-line);
+  background: var(--accent-soft);
+  border-radius: var(--radius-sm);
+  height: 54px;
+}
+.nias-login-admin .nias-login-fs-grip { cursor: grab; color: var(--text-faint); font-size: 18px; line-height: 1; user-select: none; }
+.nias-login-admin .nias-login-fs-grip:active { cursor: grabbing; }
+.nias-login-admin .nias-login-fs-name { display: flex; flex-direction: column; gap: 2px; }
+.nias-login-admin .nias-login-fs-name b { font-size: 14px; font-weight: 700; }
+.nias-login-admin .nias-login-fs-name small { font-family: var(--mono); font-size: 11px; color: var(--text-faint); direction: ltr; }
+
+/* fastsell buy-now: allowed gateways / shipping methods box */
+.nias-login-admin .nias-login-buynow-box {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin: 4px 0 14px;
+  padding: 14px 16px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+.nias-login-admin .nias-login-buynow-group { display: flex; flex-direction: column; gap: 8px; }
+.nias-login-admin .nias-login-buynow-group > .nias-login-field__hint { margin-bottom: 2px; }
+.nias-login-admin .nias-login-buynow-zone { font-size: 12px; font-weight: 800; color: var(--text-faint); margin: 6px 0 0; }
+.nias-login-admin .nias-login-buynow-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-xs);
+}
+
+/* meta nias-login-field list */
+.nias-login-admin .nias-login-meta-list { display: flex; flex-direction: column; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.nias-login-admin .nias-login-meta-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 14px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  margin: 0;
+}
+.nias-login-admin .nias-login-meta-item .nias-login-fs-grip { flex: 0 0 auto; }
+.nias-login-admin .nias-login-meta-item__txt { flex: 1; font-size: 14px; }
+.nias-login-admin .nias-login-meta-item__txt code { font-family: var(--mono); font-size: 11.5px; color: var(--accent-2); direction: ltr; }
+
+/* role nias-login-chips */
+.nias-login-admin .nias-login-chips { display: flex; flex-wrap: wrap; gap: 10px; }
+.nias-login-admin .nias-login-chip {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 8px 13px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  border-radius: 20px;
+  font-size: 13px; cursor: pointer;
+  transition: all .16s;
+  margin: 0;
+}
+.nias-login-admin .nias-login-chip:has(nias-login-input:checked) { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+
+/* ============================================================
+   NOTIFICATION DRAWER (rendered outside .nias-login-admin, dark-themed)
+   ============================================================ */
+.nias-login-drawer-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.5);
+  opacity: 0; pointer-events: none;
+  transition: opacity .25s; z-index: 99990;
+}
+.nias-login-drawer-overlay.open { opacity: 1; pointer-events: auto; }
+.nias-login-drawer {
+  position: fixed; top: 0; left: 0; bottom: 0;
+  width: 360px; max-width: 88vw;
+  background: #14172b;
+  color: #e9eaf7;
+  border-right: 1px solid rgba(255,255,255,0.08);
+  transform: translateX(-100%);
+  transition: transform .28s cubic-bezier(.4,0,.2,1);
+  z-index: 99991;
+  display: flex; flex-direction: column;
+  box-shadow: 18px 0 50px rgba(0,0,0,0.3);
+  font-family: "Vazirmatn", Tahoma, sans-serif;
+  direction: rtl;
+}
+.nias-login-drawer.open { transform: none; }
+.nias-login-drawer__head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 20px;
+  background: #6366f1; color: #fff;
+}
+.nias-login-drawer__head h3 { margin: 0; font-size: 16px; font-weight: 800; color: #fff; }
+.nias-login-drawer__close { background: transparent; border: none; color: #fff; cursor: pointer; font-size: 24px; line-height: 1; }
+.nias-login-drawer__body { flex: 1; overflow-y: auto; padding: 18px; display: flex; flex-direction: column; gap: 12px; }
+.nias-login-drawer .nias-login-notif {
+  padding: 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: #1a1e38;
+  font-size: 13px; line-height: 1.7; color: #a6acd4;
+}
+.nias-login-drawer .nias-login-notif--alert { border-color: rgba(248,113,113,0.4); background: rgba(248,113,113,0.08); }
+.nias-login-drawer .nias-login-notif code { font-family: "JetBrains Mono", ui-monospace, monospace; direction: ltr; }
+
+/* ============================================================
+   DASHBOARD — aliases for the existing tab-dashboard markup
+   ============================================================ */
+.nias-login-admin .nias-dash-notice {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 14px 16px; margin-bottom: 22px;
+  border-radius: var(--radius-sm);
+  background: var(--accent-soft);
+  border: 1px solid var(--accent-line);
+  font-size: 13px; line-height: 1.7; color: var(--text-muted);
+}
+.nias-login-admin .nias-dash-notice svg { color: var(--accent); margin-top: 2px; flex: 0 0 auto; }
+.nias-login-admin .nias-dash-notice strong { color: var(--text); }
+.nias-login-admin .nias-dash-notice--warning { background: rgba(251,191,36,0.10); border-color: rgba(251,191,36,0.30); }
+.nias-login-admin .nias-dash-notice--warning svg { color: var(--warn); }
+.nias-login-admin .nias-dash-notice--success { background: rgba(52,211,153,0.10); border-color: rgba(52,211,153,0.30); }
+.nias-login-admin .nias-dash-notice--success svg { color: var(--success); }
+.nias-login-admin .nias-dash-notice a { color: inherit; }
+
+.nias-login-admin .nias-dash-cards {
+  display: grid; grid-template-columns: repeat(5, minmax(0,1fr));
+  gap: 16px; margin-bottom: 22px;
+}
+@media (max-width:1200px){ .nias-login-admin .nias-dash-cards { grid-template-columns: repeat(3,1fr); } }
+@media (max-width:680px){ .nias-login-admin .nias-dash-cards { grid-template-columns: repeat(2,1fr); } }
+.nias-login-admin .nias-dash-card {
+  position: relative;
+  background: var(--surface); background-image: var(--card-grad);
+  border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 18px; display: flex; align-items: center; gap: 14px;
+  box-shadow: var(--shadow-sm); overflow: hidden;
+}
+.nias-login-admin .nias-dash-card__icon {
+  width: 40px; height: 40px; flex: 0 0 auto;
+  border-radius: var(--radius-xs);
+  display: grid; place-items: center;
+}
+.nias-login-admin .nias-dash-card__icon svg { width: 21px; height: 21px; }
+.nias-login-admin .nias-dash-card__body { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.nias-login-admin .nias-dash-card__value { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; line-height: 1; }
+.nias-login-admin .nias-dash-card__label { font-size: 12.5px; color: var(--text-faint); font-weight: 600; }
+.nias-login-admin .nias-dash-card__badge {
+  position: absolute; top: 14px; left: 14px;
+  font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 20px;
+  background: rgba(52,211,153,0.14); color: var(--success);
+}
+.nias-login-admin .nias-dash-card--blue   .nias-dash-card__icon { background: rgba(96,165,250,0.14);  color: var(--info); }
+.nias-login-admin .nias-dash-card--green  .nias-dash-card__icon { background: rgba(52,211,153,0.14);  color: var(--success); }
+.nias-login-admin .nias-dash-card--purple .nias-dash-card__icon { background: rgba(167,139,250,0.16); color: #a78bfa; }
+.nias-login-admin .nias-dash-card--orange .nias-dash-card__icon { background: rgba(251,191,36,0.14);  color: var(--warn); }
+.nias-login-admin .nias-dash-card--red    .nias-dash-card__icon { background: rgba(248,113,113,0.14); color: var(--danger); }
+
+.nias-login-admin .nias-dash-row { display: grid; gap: 18px; margin-bottom: 18px; grid-template-columns: 1fr; }
+.nias-login-admin .nias-dash-row:has(.nias-dash-chart-box--wide) { grid-template-columns: 2fr 1fr; }
+.nias-login-admin .nias-dash-row:has(.nias-dash-chart-box--half) { grid-template-columns: 1fr 1fr; }
+@media (max-width:1000px){ .nias-login-admin .nias-dash-row { grid-template-columns: 1fr !important; } }
+.nias-login-admin .nias-dash-chart-box {
+  background: var(--surface); background-image: var(--card-grad);
+  border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 18px 20px; box-shadow: var(--shadow-sm); min-width: 0;
+}
+.nias-login-admin .nias-dash-chart-box__header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.nias-login-admin .nias-dash-chart-box__title { font-size: 14.5px; font-weight: 800; }
+.nias-login-admin .nias-dash-legend { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--text-muted); }
+.nias-login-admin .nias-dash-legend__dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+.nias-login-admin .nias-dash-donut-wrap { position: relative; display: grid; place-items: center; }
+.nias-login-admin .nias-dash-donut-center {
+  position: absolute; inset: 0;
+  display: grid; place-content: center; place-items: center; text-align: center; pointer-events: none;
+}
+.nias-login-admin .nias-dash-donut-center span { font-size: 26px; font-weight: 800; display: block; line-height: 1; }
+.nias-login-admin .nias-dash-donut-center small { font-size: 11px; color: var(--text-faint); }
+.nias-login-admin .nias-dash-table-wrap { border: 1px solid var(--border); border-radius: var(--radius-sm); overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; }
+.nias-login-admin .nias-dash-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.nias-login-admin .nias-dash-table th {
+  text-align: right; font-weight: 700; color: var(--text-muted);
+  padding: 12px 14px; background: var(--surface-2);
+  border-bottom: 1px solid var(--border); white-space: nowrap;
+}
+.nias-login-admin .nias-dash-table td { padding: 11px 14px; border-bottom: 1px solid var(--border-soft); color: var(--text); }
+.nias-login-admin .nias-dash-table tr:last-child td { border-bottom: 0; }
+.nias-login-admin .nias-dash-table tbody tr:hover { background: var(--surface-2); }
+.nias-login-admin .nias-dash-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11.5px; font-weight: 700; padding: 3px 9px; border-radius: 20px;
+  background: var(--accent-soft); color: var(--accent);
+}
+.nias-login-admin .nias-dash-badge--green  { background: rgba(52,211,153,0.14); color: var(--success); }
+.nias-login-admin .nias-dash-badge--purple { background: rgba(167,139,250,0.16); color: #a78bfa; }
+.nias-login-admin .nias-dash-badge--red    { background: rgba(248,113,113,0.14); color: var(--danger); }
+.nias-login-admin .nias-dash-badge--orange { background: rgba(251,191,36,0.14); color: var(--warn); }
+.nias-login-admin .nias-dash-badge--blue   { background: rgba(96,165,250,0.14); color: var(--info); }
+
+/* ============================================================
+   GRAPHITE technical flavour (Direction C)
+   ============================================================ */
+.nias-login-admin[data-dir="c"] .nias-login-field__hint,
+.nias-login-admin[data-dir="c"] .nias-login-fs-name small,
+.nias-login-admin[data-dir="c"] .nias-login-card__sub { font-family: var(--mono); font-size: 11.5px; }
+.nias-login-admin[data-dir="c"] .nias-login-stat__value,
+.nias-login-admin[data-dir="c"] .nias-login-page-head__title { letter-spacing: -0.01em; }
+.nias-login-admin[data-dir="c"] .nias-login-badge { border-radius: 3px; }
+.nias-login-admin[data-dir="c"] .nias-login-chip { border-radius: 4px; }
+.nias-login-admin[data-dir="c"] .nias-login-toggle::before { border-radius: 4px; }
+.nias-login-admin[data-dir="c"] .nias-login-toggle .nias-login-knob { border-radius: 3px; }
+.nias-login-admin[data-dir="c"] .nias-login-radio-card__dot { border-radius: 3px; }
+.nias-login-admin[data-dir="c"] .nias-login-radio-card__dot::after { border-radius: 2px; }
+
+/* ============================================================
+   wp-admin resets — keep our shell clean of global admin styles
+   ============================================================ */
+.nias-login-admin h1, .nias-login-admin h2, .nias-login-admin h3,
+.nias-login-admin h4, .nias-login-admin h5, .nias-login-admin p { color: var(--text); }
+.nias-login-admin a { box-shadow: none; }
+.nias-login-admin .nias-login-card__body label { display: block; }
+/* CodeMirror (email templates) inside cards */
+.nias-login-admin .CodeMirror {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  height: auto;
+}
+/* hide the default WP submit button — saving is via the nias-login-topbar button */
+.nias-login-admin .submit,
+.nias-login-admin p.submit { display: none; }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+/* Tablet — compact nias-login-topbar at medium widths */
+@media (max-width: 1040px) {
+  .nias-login-admin .nias-login-dirswitch__btn { padding: 7px 9px; font-size: 11.5px; }
+}
+@media (max-width: 880px) {
+  .nias-login-admin .nias-login-dirswitch { display: none; }
+  .nias-login-admin .nias-login-btn-save span { display: none; }
+  .nias-login-admin .nias-login-btn-save { padding: 11px 13px; }
+}
+
+/* Mobile — stack nias-login-rail above content */
+@media (max-width: 782px) {
+  /* overflow:hidden یک scroll container می‌سازد و position:sticky داخلش
+     هیچ‌وقت نمی‌چسبد؛ روی موبایل برداشته می‌شود تا نوار بالا کار کند */
+  .nias-login-admin { height: auto; margin: 8px 0 20px; border-radius: 12px; overflow: visible; }
+
+  /* nias-login-body becomes column: nias-login-rail on top, nias-login-main below */
+  .nias-login-admin .nias-login-body { flex-direction: column; }
+
+  /* nias-login-topbar */
+  /* صفحات تنظیمات بلندند؛ بدون این، برای ذخیره باید تا بالای صفحه اسکرول کرد.
+     ۴۶px ارتفاع نوار مدیریت وردپرس در حالت موبایل است. */
+  .nias-login-admin .nias-login-topbar {
+    height: auto; min-height: 56px; padding: 10px 14px; gap: 10px; flex-wrap: wrap;
+    position: sticky; top: 46px; z-index: 30;
+    border-radius: 12px 12px 0 0;
+    /* رنگ اصلی نوار نیمه‌شفاف است؛ حالا که محتوا از زیرش رد می‌شود
+       پس‌زمینه باید مات باشد وگرنه متن پشتش دیده می‌شود */
+    background: var(--surface);
+  }
+  .nias-login-admin .nias-login-topbar__spacer { display: none; }
+  .nias-login-admin .nias-login-dirswitch { display: none; }
+  .nias-login-admin .nias-login-btn-save span { display: none; }
+  .nias-login-admin .nias-login-btn-save { padding: 10px 13px; }
+  /* «آموزش تنظیم» فقط آیکون بماند؛ متنش title لینک است پس دسترس‌پذیری حفظ می‌شود */
+  .nias-login-admin .nias-login-help-link span { display: none; }
+  .nias-login-admin .nias-login-help-link { padding: 10px 12px; gap: 0; }
+
+  /* nias-login-rail → horizontal scrollable tab bar */
+  .nias-login-admin .nias-login-rail {
+    position: static;
+    width: 100%;
+    height: auto;
+    flex-direction: column;
+    border-left: 0;
+    border-bottom: 1px solid var(--border);
+    overflow: visible;
+    transition: none;
+  }
+  .nias-login-admin .nias-login-rail:hover { width: 100%; box-shadow: none; }
+  .nias-login-admin .nias-login-rail__top { display: none; }
+  .nias-login-admin .nias-login-rail__nav {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 8px 10px;
+    gap: 4px;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .nias-login-admin .nias-login-rail__nav::-webkit-scrollbar { display: none; }
+  .nias-login-admin .nias-login-rail__group-label { display: none; }
+
+  /* nav items become compact vertical icon+label nias-login-chips */
+  .nias-login-admin .nias-login-navitem {
+    width: auto;
+    flex: 0 0 auto;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 7px 10px;
+  }
+  .nias-login-admin .nias-login-navitem__icon { width: 20px; height: 20px; }
+  .nias-login-admin .nias-login-navitem__icon svg { width: 18px; height: 18px; }
+  .nias-login-admin .nias-login-navitem__label { opacity: 1; transform: none; font-size: 10.5px; }
+  .nias-login-admin .nias-login-navitem.active::before { display: none; }
+
+  /* nias-login-main */
+  .nias-login-admin .nias-login-main { overflow: visible; margin-right: 0; padding: 20px 16px 60px; }
+
+  /* حالتِ «ریل پین‌شده» در localStorage ذخیره می‌شود، پس اگر کاربر روی دسکتاپ
+     ریل را پین کرده باشد کلاس nias-login-rail-pinned روی موبایل هم باقی می‌ماند.
+     آن قوانین وزن (0,3,0) دارند و قوانین موبایل بالا (0,2,0) — و media query هیچ
+     وزنی اضافه نمی‌کند. پس محتوا همچنان به اندازه‌ی عرض ریل هل داده و بریده
+     می‌شد. اینجا با همان وزن خنثی می‌شوند. */
+  .nias-login-admin.nias-login-rail-pinned .nias-login-main { margin-right: 0; }
+  .nias-login-admin.nias-login-rail-pinned .nias-login-rail { width: 100%; }
+
+  /* grids */
+  .nias-login-admin .nias-login-grid { grid-template-columns: 1fr; }
+  .nias-login-admin .nias-login-span-2 { grid-column: auto; }
+
+  /* cards padding */
+  .nias-login-admin .nias-login-card__body { padding: 16px; }
+
+  /* fields — stack label/control vertically */
+  .nias-login-admin .nias-login-field { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .nias-login-admin .nias-login-field .nias-login-field__control { width: 100%; }
+  .nias-login-admin .nias-login-field .nias-login-input--sm { width: 100%; }
+
+  /* nias-login-stat cards */
+  .nias-login-admin .nias-dash-cards,
+  .nias-login-admin .nias-login-stat-cards { grid-template-columns: repeat(2, 1fr); }
+
+  /* ردیف‌های چندورودی (مثل «تلاش / مکث» در تب امنیت) داخل field-stack‌اند نه
+     field، پس قانون بالا شاملشان نمی‌شد و ورودی‌ها ۱۳۰px ثابت می‌ماندند */
+  .nias-login-admin .nias-login-field-stack .nias-login-input--sm { width: 100%; }
+
+  /* سافاری موبایل هنگام فوکوس روی ورودیِ کوچک‌تر از ۱۶px کل صفحه را زوم می‌کند
+     و دیگر به حالت اول برنمی‌گردد */
+  .nias-login-admin .nias-login-input,
+  .nias-login-admin .nias-login-textarea,
+  .nias-login-admin .nias-login-select,
+  .nias-login-admin .nias-login-card__body input[type="text"],
+  .nias-login-admin .nias-login-card__body input[type="number"],
+  .nias-login-admin .nias-login-card__body input[type="password"],
+  .nias-login-admin .nias-login-card__body input[type="email"],
+  .nias-login-admin .nias-login-card__body input[type="url"],
+  .nias-login-admin .nias-login-card__body textarea,
+  .nias-login-admin .nias-login-card__body select { font-size: 16px; }
+
+  /* کلید دووضعیتی: برچسب‌هایش nowrap‌اند و کنار هم از عرض بیرون می‌زدند */
+  .nias-login-admin .nias-login-two-way { flex-wrap: wrap; gap: 8px; }
+
+  /* گروه دکمه/چیپ‌ها */
+  .nias-login-admin .nias-login-chips { gap: 8px; }
+
+  /* نمودارها و تصاویر نباید از کارت بیرون بزنند */
+  .nias-login-admin canvas,
+  .nias-login-admin img { max-width: 100%; height: auto; }
+
+  /* سرصفحه */
+  .nias-login-admin .nias-login-page-head__icon { width: 42px; height: 42px; }
+  .nias-login-admin .nias-login-page-head__icon svg { width: 22px; height: 22px; }
+  .nias-login-admin .nias-login-page-head__title { font-size: 20px; }
+  .nias-login-admin .nias-login-page-head__desc { font-size: 13.5px; }
+}
+
+/* ---------- گوشی‌های باریک ---------- */
+@media (max-width: 560px) {
+  /* دو ستون در این عرض کارت‌های آمار را له می‌کرد (عدد و برچسب روی هم می‌افتاد) */
+  .nias-login-admin .nias-dash-cards,
+  .nias-login-admin .nias-login-stat-cards { grid-template-columns: 1fr; gap: 12px; }
+
+  .nias-login-admin .nias-login-main { padding: 16px 12px 48px; }
+  .nias-login-admin .nias-login-card__body { padding: 14px; }
+  .nias-login-admin .nias-login-card__head { padding: 14px 16px; }
+
+  /* عنوان فرعی برند در نوار بالا جا نمی‌شد و نوار را دوخطه می‌کرد */
+  .nias-login-admin .nias-login-brand__sub { display: none; }
+  .nias-login-admin .nias-login-brand__title { font-size: 14px; }
+
+  /* جدول‌ها فشرده‌تر تا اسکرول افقی کمتر لازم شود */
+  .nias-login-admin .nias-login-table,
+  .nias-login-admin .nias-dash-table { font-size: 12.5px; }
+  .nias-login-admin .nias-login-table th,
+  .nias-login-admin .nias-dash-table th,
+  .nias-login-admin .nias-login-table td,
+  .nias-login-admin .nias-dash-table td { padding: 9px 10px; }
+
+  .nias-login-admin .nias-login-codechip { font-size: 13px; padding: 10px 12px; }
+}
