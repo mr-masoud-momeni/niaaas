@@ -2,13 +2,13 @@
 /**
  * Plugin Name: Nias Login - Bale OTP Resend
  * Description: افزودن امکان ارسال مجدد کد تایید از طریق پیام‌رسان بله، بدون تغییر در فایل‌های Nias Login.
- * Version: 1.0.0
+ * Version: 1.0.1
  * Author: Masoud Momeni
  */
 
 defined('ABSPATH') || exit;
 
-define('NIAS_BALE_RESEND_VERSION', '1.0.0');
+define('NIAS_BALE_RESEND_VERSION', '1.0.1');
 define('NIAS_BALE_RESEND_URL', plugin_dir_url(__FILE__));
 
 action_add_action();
@@ -24,11 +24,7 @@ function nias_bale_resend_enqueue_assets() {
         return;
     }
 
-    // این افزونه هیچ تنظیماتی ندارد؛ فقط وقتی بله در Nias تنظیم شده، اسکریپت را لود می‌کنیم.
-    if (!get_option('nias_bale_activate', 0)) {
-        return;
-    }
-
+    // فقط وجود تنظیمات فعلی بله در Nias را بررسی می‌کنیم؛ تنظیمات جدیدی ساخته نمی‌شود.
     if (!get_option('nias_bale_api', '') || !get_option('nias_bale_botid', '')) {
         return;
     }
@@ -73,10 +69,6 @@ function nias_bale_resend_generate_code($length) {
 function nias_bale_resend_ajax() {
     if (!check_ajax_referer('nias_bale_resend', 'nonce', false)) {
         wp_send_json_error(['message' => 'درخواست نامعتبر است.'], 403);
-    }
-
-    if (!get_option('nias_bale_activate', 0)) {
-        wp_send_json_error(['message' => 'ارسال کد با بله فعال نیست.'], 400);
     }
 
     if (!get_option('nias_bale_api', '') || !get_option('nias_bale_botid', '')) {
