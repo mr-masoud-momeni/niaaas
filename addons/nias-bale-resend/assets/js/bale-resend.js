@@ -4,16 +4,14 @@
   if (typeof window.niasBaleResend === 'undefined') return;
 
   var config = window.niasBaleResend;
-  var selector = '.nias-resendbox .nias-resend';
+  var boxSelector = '.nias-resendbox';
+  var originalSelector = '.nias-resend';
+  var baleSelector = '.nias-bale-resend-button';
   var pollTimer = null;
   var baleCountdownTimer = null;
 
-  function getButton() {
-    return document.querySelector(selector);
-  }
-
   function getBox() {
-    return document.querySelector('.nias-resendbox');
+    return document.querySelector(boxSelector);
   }
 
   function isActive() {
@@ -21,29 +19,77 @@
     return !!(box && box.classList.contains('active'));
   }
 
-  function setButtonLabel() {
-    var button = getButton();
-    if (!button || !isActive()) return;
+  function getBaleButton() {
+    return document.querySelector(baleSelector);
+  }
 
+  function createBaleButton() {
+    var box = getBox();
+    if (!box || !isActive()) return null;
+
+    var existing = getBaleButton();
+    if (existing) return existing;
+
+    var original = box.querySelector(originalSelector);
+    if (!original) return null;
+
+    var button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'nias-bale-resend-button';
     button.textContent = config.label;
     button.setAttribute('aria-label', config.label);
-    button.removeAttribute('disabled');
+
+    button.style.cssText = [
+      'width:auto',
+      'background:transparent',
+      'color:var(--nias-primary,#043ccc)',
+      'border:0',
+      'outline:0',
+      'padding:0',
+      'margin:0',
+      'font:inherit',
+      'cursor:pointer',
+      'display:inline-flex',
+      'align-items:center',
+      'justify-content:center'
+    ].join(';');
+
+    // دکمه اصلی Nias فقط پنهان می‌شود؛ handler آن را دستکاری یا متوقف نمی‌کنیم.
+    original.style.display = 'none';
+    original.setAttribute('aria-hidden', 'true');
+
+    box.insertBefore(button, original);
+    return button;
+  }
+
+  function removeBaleButton() {
+    var button = getBaleButton();
+    if (button) button.remove();
   }
 
   function getIdentifier() {
-    var input = document.querySelector('#nias-code-form input[name="identifier"]');
+    var input = document.querySelector('#nias-code-form input[name="phone"]');
+    if (input && input.value) return input.value.trim();
+
+    input = document.querySelector('#niasphoneinput');
     return input ? (input.value || '').trim() : '';
+  }
+
+  function normalizeDigits(value) {
+    return String(value || '').replace(/[۰-۹]/g, function (digit) {
+      return '۰۱۲۳۴۵۶۷۸۹'.indexOf(digit);
+    });
   }
 
   function clearCodeInputs() {
     document.querySelectorAll('.nias-code-box input').forEach(function (input) {
       input.value = '';
-      input.disabled = false;
     });
   }
 
   function showMessage(message) {
-    var box = document.querySelector('.nias-login-message');
+    var box = document.querySelector('.nias-login-code .nias-login-message');
+    if (!box) box = document.querySelector('.nias-login-message');
     if (box) {
       box.textContent = message;
       box.classList.add('active');
@@ -62,14 +108,15 @@
 
   function startBaleCountdown(duration) {
     var remaining = Math.max(1, parseInt(duration, 10) || 120);
-    var box = getBox();
 
     if (baleCountdownTimer) {
       clearInterval(baleCountdownTimer);
       baleCountdownTimer = null;
     }
 
+    var box = getBox();
     if (box) box.classList.remove('active');
+    removeBaleButton();
     renderCountdown(remaining);
 
     baleCountdownTimer = setInterval(function () {
@@ -81,17 +128,19 @@
         baleCountdownTimer = null;
 
         var resendBox = getBox();
-        if (resendBox) resendBox.classList.add('active');
-        setButtonLabel();
+        if (resendBox) {
+          resendBox.classList.add('active');
+          createBaleButton();
+        }
       }
     }, 1000);
   }
 
   function sendBale(button) {
-    var identifier = getIdentifier();
+    var identifier = normalizeDigits(getIdentifier());
 
-    if (!identifier) {
-      showMessage('شماره موبایل پیدا نشد. لطفاً دوباره تلاش کنید.');
+    if (!/^09\d{9}$/.test(identifier)) {
+      showMessage('شماره موبایل پیدا نشد. لطفاً دوباره شماره را وارد کنید.');
       return;
     }
 
@@ -139,28 +188,22 @@
       });
   }
 
-  // فقط کلیک روی دکمه فعال بله را از handler اصلی resend جدا می‌کنیم.
-  // هیچ تغییری در باز/بسته شدن مودال یا فرم اصلی انجام نمی‌شود.
   document.addEventListener('click', function (event) {
     var target = event.target;
-    var button = target && target.closest ? target.closest(selector) : null;
+    var button = target && target.closest ? target.closest(baleSelector) : null;
 
-    if (!button || !isActive()) return;
+    if (!button) return;
+    sendBale(button);
+  });
 
-    event.preventDefault();
-    event.stopPropagation();
-    event.stopImmediatePropagation();
-
-    if (!button.disabled) sendBale(button);
-  }, true);
-
-  // بدون MutationObserver روی کل DOM؛ فقط وضعیت resendbox را سبک بررسی می‌کنیم.
   function watchResendBox() {
-    setButtonLabel();
+    if (isActive()) createBaleButton();
 
     if (!pollTimer) {
       pollTimer = setInterval(function () {
-        if (isActive()) setButtonLabel();
+        if (isActive()) {
+          createBaleButton();
+        }
       }, 500);
     }
   }
