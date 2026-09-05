@@ -1,106 +1,89 @@
 (function () {
   'use strict';
 
-  if (typeof window.niasBaleResend === 'undefined') {
-    return;
-  }
+  if (typeof window.niasBaleResend === 'undefined') return;
 
   var config = window.niasBaleResend;
   var selector = '.nias-resendbox .nias-resend';
+  var pollTimer = null;
+  var baleCountdownTimer = null;
 
-  function getResendButton() {
+  function getButton() {
     return document.querySelector(selector);
   }
 
-  function isResendActive(button) {
-    var box = button && button.closest('.nias-resendbox');
+  function getBox() {
+    return document.querySelector('.nias-resendbox');
+  }
+
+  function isActive() {
+    var box = getBox();
     return !!(box && box.classList.contains('active'));
   }
 
-  function updateButton() {
-    var button = getResendButton();
-    if (!button) return;
+  function setButtonLabel() {
+    var button = getButton();
+    if (!button || !isActive()) return;
 
-    if (isResendActive(button)) {
-      if (!button.dataset.niasBaleOriginalText) {
-        button.dataset.niasBaleOriginalText = button.textContent.trim();
-      }
-      button.textContent = config.label;
-      button.setAttribute('aria-label', config.label);
-      button.dataset.niasBaleActive = '1';
-    } else {
-      button.dataset.niasBaleActive = '0';
-    }
+    button.textContent = config.label;
+    button.setAttribute('aria-label', config.label);
+    button.removeAttribute('disabled');
   }
 
   function getIdentifier() {
-    var input = document.querySelector("#nias-code-form input[name='identifier']");
-    if (!input) return '';
-    return (input.value || '').trim();
+    var input = document.querySelector('#nias-code-form input[name="identifier"]');
+    return input ? (input.value || '').trim() : '';
   }
 
-  function clearOldCode() {
+  function clearCodeInputs() {
     document.querySelectorAll('.nias-code-box input').forEach(function (input) {
       input.value = '';
+      input.disabled = false;
     });
   }
 
-  function showMessage(message, type) {
-    var messageBox = document.querySelector('.nias-login-message');
-    if (messageBox) {
-      messageBox.textContent = message;
-      messageBox.classList.add('active');
-    }
-
-    if (typeof window.niasToast === 'function') {
-      window.niasToast(message, type || 'success');
+  function showMessage(message) {
+    var box = document.querySelector('.nias-login-message');
+    if (box) {
+      box.textContent = message;
+      box.classList.add('active');
     }
   }
 
-  function restartNiasCountdown(duration) {
-    // تابع اصلی Nias داخل همان اسکریپت به صورت closure است و قابل دسترسی نیست.
-    // بنابراین یک تایمر کوچک مستقل فقط برای رندر UI اجرا می‌کنیم.
-    var remaining = parseInt(duration, 10) || 120;
-    var countdownEls = document.querySelectorAll('.nias-countdown');
-    var resendBox = document.querySelector('.nias-resendbox');
-    var codeInputs = document.querySelectorAll('.nias-code-box input');
-    var circle = document.querySelector('.stroke-neutral-dark');
-    var total = remaining;
-    var timer = null;
+  function renderCountdown(seconds) {
+    var value = Math.max(0, parseInt(seconds, 10) || 0);
+    var minutes = String(Math.floor(value / 60)).padStart(2, '0');
+    var secs = String(value % 60).padStart(2, '0');
 
-    if (resendBox) resendBox.classList.remove('active');
-    if (codeInputs.length) {
-      codeInputs.forEach(function (input) {
-        input.value = '';
-        input.disabled = false;
-      });
+    document.querySelectorAll('.nias-countdown').forEach(function (el) {
+      el.textContent = minutes + ':' + secs;
+    });
+  }
+
+  function startBaleCountdown(duration) {
+    var remaining = Math.max(1, parseInt(duration, 10) || 120);
+    var box = getBox();
+
+    if (baleCountdownTimer) {
+      clearInterval(baleCountdownTimer);
+      baleCountdownTimer = null;
     }
 
-    function render() {
-      var safe = Math.max(0, remaining);
-      var minute = String(Math.floor(safe / 60)).padStart(2, '0');
-      var second = String(safe % 60).padStart(2, '0');
+    if (box) box.classList.remove('active');
+    renderCountdown(remaining);
 
-      countdownEls.forEach(function (el) {
-        el.textContent = minute + ':' + second;
-      });
-
-      if (circle && total > 0) {
-        var circumference = 345.575;
-        circle.style.strokeDashoffset = String(circumference * ((total - safe) / total));
-      }
-
-      if (safe <= 0) {
-        if (timer) clearInterval(timer);
-        if (resendBox) resendBox.classList.add('active');
-        updateButton();
-      }
-    }
-
-    render();
-    timer = setInterval(function () {
+    baleCountdownTimer = setInterval(function () {
       remaining--;
-      render();
+      renderCountdown(remaining);
+
+      if (remaining <= 0) {
+        clearInterval(baleCountdownTimer);
+        baleCountdownTimer = null;
+
+        var resendBox = getBox();
+        if (resendBox) resendBox.classList.add('active');
+        setButtonLabel();
+      }
     }, 1000);
   }
 
@@ -108,15 +91,12 @@
     var identifier = getIdentifier();
 
     if (!identifier) {
-      showMessage('شماره موبایل پیدا نشد. لطفاً دوباره تلاش کنید.', 'error');
+      showMessage('شماره موبایل پیدا نشد. لطفاً دوباره تلاش کنید.');
       return;
     }
 
-    var box = button.closest('.nias-resendbox');
-    if (box) box.classList.add('loading');
     button.disabled = true;
     button.textContent = config.sending;
-    clearOldCode();
 
     var body = new URLSearchParams();
     body.append('action', 'nias_bale_resend');
@@ -134,63 +114,60 @@
         return response.json();
       })
       .then(function (result) {
-        if (result && result.success) {
-          var duration = result.data && result.data.duration ? result.data.duration : 120;
-          showMessage(result.data.message || 'کد جدید با پیام‌رسان بله ارسال شد.', 'success');
-          restartNiasCountdown(duration);
-        } else {
+        if (!result || !result.success) {
           var message = result && result.data && result.data.message
             ? result.data.message
             : 'خطا در ارسال کد با بله.';
-          showMessage(message, 'error');
-          if (box) box.classList.add('active');
+
+          showMessage(message);
           button.disabled = false;
           button.textContent = config.label;
+          return;
         }
+
+        clearCodeInputs();
+        showMessage(result.data.message || 'کد جدید با پیام‌رسان بله ارسال شد.');
+        startBaleCountdown(result.data.duration || 120);
+
+        var firstInput = document.querySelector('.nias-code-box input');
+        if (firstInput) firstInput.focus();
       })
       .catch(function () {
-        showMessage('خطا در ارتباط با سرور. لطفاً دوباره تلاش کنید.', 'error');
-        if (box) box.classList.add('active');
+        showMessage('خطا در ارتباط با سرور. لطفاً دوباره تلاش کنید.');
         button.disabled = false;
         button.textContent = config.label;
-      })
-      .finally(function () {
-        if (box) box.classList.remove('loading');
       });
   }
 
-  // در capture phase اجرا می‌شود تا handler اصلی Nias قبل از رسیدن کلیک به آن متوقف شود.
+  // فقط کلیک روی دکمه فعال بله را از handler اصلی resend جدا می‌کنیم.
+  // هیچ تغییری در باز/بسته شدن مودال یا فرم اصلی انجام نمی‌شود.
   document.addEventListener('click', function (event) {
-    var button = event.target.closest ? event.target.closest(selector) : null;
-    if (!button || !isResendActive(button)) return;
+    var target = event.target;
+    var button = target && target.closest ? target.closest(selector) : null;
+
+    if (!button || !isActive()) return;
 
     event.preventDefault();
     event.stopPropagation();
     event.stopImmediatePropagation();
 
-    if (button.disabled) return;
-    sendBale(button);
+    if (!button.disabled) sendBale(button);
   }, true);
 
-  // وقتی countdown اصلی Nias کلاس active را اضافه می‌کند، متن دکمه را عوض کن.
-  var observer = new MutationObserver(function () {
-    updateButton();
-  });
+  // بدون MutationObserver روی کل DOM؛ فقط وضعیت resendbox را سبک بررسی می‌کنیم.
+  function watchResendBox() {
+    setButtonLabel();
 
-  function startObserver() {
-    if (!document.body) return;
-    observer.observe(document.body, {
-      subtree: true,
-      childList: true,
-      attributes: true,
-      attributeFilter: ['class']
-    });
-    updateButton();
+    if (!pollTimer) {
+      pollTimer = setInterval(function () {
+        if (isActive()) setButtonLabel();
+      }, 500);
+    }
   }
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', startObserver);
+    document.addEventListener('DOMContentLoaded', watchResendBox);
   } else {
-    startObserver();
+    watchResendBox();
   }
 })();
