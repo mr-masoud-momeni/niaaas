@@ -7,8 +7,7 @@
   var boxSelector = '.nias-resendbox';
   var originalSelector = '.nias-resend';
   var baleSelector = '.nias-bale-resend-button';
-  var pollTimer = null;
-  var baleCountdownTimer = null;
+  var observer = null;
 
   function getBox() {
     return document.querySelector(boxSelector);
@@ -23,61 +22,23 @@
     return document.querySelector(baleSelector);
   }
 
-  function createBaleButton() {
-    var box = getBox();
-    if (!box || !isActive()) return null;
-
-    var existing = getBaleButton();
-    if (existing) return existing;
-
-    var original = box.querySelector(originalSelector);
-    if (!original) return null;
-
-    var button = document.createElement('button');
-    button.type = 'button';
-    button.className = 'nias-bale-resend-button';
-    button.textContent = config.label;
-    button.setAttribute('aria-label', config.label);
-
-    button.style.cssText = [
-      'width:auto',
-      'background:transparent',
-      'color:var(--nias-primary,#043ccc)',
-      'border:0',
-      'outline:0',
-      'padding:0',
-      'margin:0',
-      'font:inherit',
-      'cursor:pointer',
-      'display:inline-flex',
-      'align-items:center',
-      'justify-content:center'
-    ].join(';');
-
-    // دکمه اصلی Nias فقط پنهان می‌شود؛ handler آن را دستکاری یا متوقف نمی‌کنیم.
-    original.style.display = 'none';
-    original.setAttribute('aria-hidden', 'true');
-
-    box.insertBefore(button, original);
-    return button;
-  }
-
-  function removeBaleButton() {
-    var button = getBaleButton();
-    if (button) button.remove();
-  }
-
   function getIdentifier() {
     var input = document.querySelector('#nias-code-form input[name="phone"]');
     if (input && input.value) return input.value.trim();
 
     input = document.querySelector('#niasphoneinput');
+    if (input && input.value) return input.value.trim();
+
+    // fallback برای ساختارهایی که شماره در فیلد identifier نگهداری می‌شود
+    input = document.querySelector('#nias-code-form input[name="identifier"]');
     return input ? (input.value || '').trim() : '';
   }
 
   function normalizeDigits(value) {
     return String(value || '').replace(/[۰-۹]/g, function (digit) {
       return '۰۱۲۳۴۵۶۷۸۹'.indexOf(digit);
+    }).replace(/[٠-٩]/g, function (digit) {
+      return '٠١٢٣٤٥٦٧٨٩'.indexOf(digit);
     });
   }
 
@@ -88,59 +49,54 @@
   }
 
   function showMessage(message) {
-    var box = document.querySelector('.nias-login-code .nias-login-message');
-    if (!box) box = document.querySelector('.nias-login-message');
-    if (box) {
-      box.textContent = message;
-      box.classList.add('active');
+    var messageBox = document.querySelector('.nias-login-message');
+    if (messageBox) {
+      messageBox.textContent = message;
+      messageBox.classList.add('active');
     }
   }
 
-  function renderCountdown(seconds) {
-    var value = Math.max(0, parseInt(seconds, 10) || 0);
-    var minutes = String(Math.floor(value / 60)).padStart(2, '0');
-    var secs = String(value % 60).padStart(2, '0');
-
-    document.querySelectorAll('.nias-countdown').forEach(function (el) {
-      el.textContent = minutes + ':' + secs;
-    });
-  }
-
-  function startBaleCountdown(duration) {
-    var remaining = Math.max(1, parseInt(duration, 10) || 120);
-
-    if (baleCountdownTimer) {
-      clearInterval(baleCountdownTimer);
-      baleCountdownTimer = null;
-    }
-
+  function createBaleButton() {
     var box = getBox();
-    if (box) box.classList.remove('active');
-    removeBaleButton();
-    renderCountdown(remaining);
+    if (!box || !isActive()) return;
 
-    baleCountdownTimer = setInterval(function () {
-      remaining--;
-      renderCountdown(remaining);
+    if (getBaleButton()) return;
 
-      if (remaining <= 0) {
-        clearInterval(baleCountdownTimer);
-        baleCountdownTimer = null;
+    // مهم: به دکمه و رفتار اصلی Nias دست نمی‌زنیم.
+    // دکمه Bale کاملاً مستقل از .nias-resend ساخته می‌شود.
+    var button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'nias-bale-resend-button';
+    button.textContent = config.label;
+    button.setAttribute('aria-label', config.label);
 
-        var resendBox = getBox();
-        if (resendBox) {
-          resendBox.classList.add('active');
-          createBaleButton();
-        }
-      }
-    }, 1000);
+    button.style.cssText = [
+      'display:block',
+      'width:auto',
+      'margin:8px auto 0',
+      'padding:0',
+      'background:transparent',
+      'border:0',
+      'outline:0',
+      'box-shadow:none',
+      'color:var(--nias-primary,#043ccc)',
+      'font:inherit',
+      'cursor:pointer'
+    ].join(';');
+
+    box.appendChild(button);
+  }
+
+  function removeBaleButton() {
+    var button = getBaleButton();
+    if (button) button.remove();
   }
 
   function sendBale(button) {
     var identifier = normalizeDigits(getIdentifier());
 
     if (!/^09\d{9}$/.test(identifier)) {
-      showMessage('شماره موبایل پیدا نشد. لطفاً دوباره شماره را وارد کنید.');
+      showMessage('شماره موبایل پیدا نشد. لطفاً دوباره تلاش کنید.');
       return;
     }
 
@@ -176,7 +132,10 @@
 
         clearCodeInputs();
         showMessage(result.data.message || 'کد جدید با پیام‌رسان بله ارسال شد.');
-        startBaleCountdown(result.data.duration || 120);
+
+        // بعد از ارسال موفق، فقط دکمه Bale خودمان را حذف می‌کنیم.
+        // تایمر و وضعیت مودال کاملاً در اختیار Nias باقی می‌ماند.
+        removeBaleButton();
 
         var firstInput = document.querySelector('.nias-code-box input');
         if (firstInput) firstInput.focus();
@@ -193,24 +152,39 @@
     var button = target && target.closest ? target.closest(baleSelector) : null;
 
     if (!button) return;
+
+    event.preventDefault();
+    event.stopPropagation();
     sendBale(button);
   });
 
-  function watchResendBox() {
-    if (isActive()) createBaleButton();
+  function syncButton() {
+    if (isActive()) {
+      createBaleButton();
+    } else {
+      removeBaleButton();
+    }
+  }
 
-    if (!pollTimer) {
-      pollTimer = setInterval(function () {
-        if (isActive()) {
-          createBaleButton();
-        }
-      }, 500);
+  function init() {
+    syncButton();
+
+    // فقط تغییرات خود resendbox را زیر نظر می‌گیریم؛ هیچ کلاس یا وضعیت Nias را تغییر نمی‌دهیم.
+    var box = getBox();
+    if (box && window.MutationObserver) {
+      observer = new MutationObserver(function () {
+        syncButton();
+      });
+      observer.observe(box, {
+        attributes: true,
+        attributeFilter: ['class']
+      });
     }
   }
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', watchResendBox);
+    document.addEventListener('DOMContentLoaded', init);
   } else {
-    watchResendBox();
+    init();
   }
 })();
