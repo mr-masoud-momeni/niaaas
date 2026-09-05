@@ -2,13 +2,13 @@
 /**
  * Plugin Name: Nias Login - Bale OTP Resend
  * Description: افزودن امکان ارسال مجدد کد تایید از طریق پیام‌رسان بله، بدون تغییر در فایل‌های Nias Login.
- * Version: 1.0.1
+ * Version: 1.0.2
  * Author: Masoud Momeni
  */
 
 defined('ABSPATH') || exit;
 
-define('NIAS_BALE_RESEND_VERSION', '1.0.1');
+define('NIAS_BALE_RESEND_VERSION', '1.0.2');
 define('NIAS_BALE_RESEND_URL', plugin_dir_url(__FILE__));
 
 action_add_action();
@@ -20,14 +20,9 @@ function action_add_action() {
 }
 
 function nias_bale_resend_enqueue_assets() {
-    if (is_admin()) {
-        return;
-    }
+    if (is_admin()) return;
 
-    // فقط وجود تنظیمات فعلی بله در Nias را بررسی می‌کنیم؛ تنظیمات جدیدی ساخته نمی‌شود.
-    if (!get_option('nias_bale_api', '') || !get_option('nias_bale_botid', '')) {
-        return;
-    }
+    if (!get_option('nias_bale_api', '') || !get_option('nias_bale_botid', '')) return;
 
     wp_enqueue_script(
         'nias-bale-resend',
@@ -46,8 +41,7 @@ function nias_bale_resend_enqueue_assets() {
 }
 
 function nias_bale_resend_normalize_digits($value) {
-    $value = (string) $value;
-    return strtr($value, [
+    return strtr((string) $value, [
         '۰' => '0', '۱' => '1', '۲' => '2', '۳' => '3', '۴' => '4',
         '۵' => '5', '۶' => '6', '۷' => '7', '۸' => '8', '۹' => '9',
         '٠' => '0', '١' => '1', '٢' => '2', '٣' => '3', '٤' => '4',
@@ -81,16 +75,10 @@ function nias_bale_resend_ajax() {
 
     $identifier = nias_bale_resend_normalize_digits(trim($identifier));
 
-    if ($identifier === '') {
-        wp_send_json_error(['message' => 'شماره موبایل پیدا نشد.'], 400);
-    }
-
-    // بله فقط برای OTP شماره موبایل قابل استفاده است.
     if (!preg_match('/^09\d{9}$/', $identifier)) {
         wp_send_json_error(['message' => 'ارسال کد با بله فقط برای شماره موبایل امکان‌پذیر است.'], 400);
     }
 
-    // یک درخواست در هر 60 ثانیه برای هر شماره/IP.
     $rate_key = 'nias_bale_resend_' . md5($identifier . '|' . nias_bale_resend_client_ip());
     if (get_transient($rate_key)) {
         wp_send_json_error(['message' => 'لطفاً کمی بعد دوباره تلاش کنید.'], 429);
@@ -113,12 +101,10 @@ function nias_bale_resend_ajax() {
     $now = current_time('timestamp');
     $expired_at_timestamp = strtotime((string) $verify->expired_at);
 
-    // فقط وقتی تایمر قبلی تمام شده اجازه ارسال مجدد بده.
     if ($expired_at_timestamp && $expired_at_timestamp > $now) {
-        $remaining = max(1, $expired_at_timestamp - $now);
         wp_send_json_error([
             'message'  => 'کد قبلی هنوز معتبر است.',
-            'duration' => $remaining,
+            'duration' => max(1, $expired_at_timestamp - $now),
         ], 400);
     }
 
@@ -126,14 +112,13 @@ function nias_bale_resend_ajax() {
         wp_send_json_error(['message' => 'Nias Login هنوز بارگذاری نشده است.'], 500);
     }
 
-    $digits  = absint(get_option('nsdigitsquantity', 4));
-    $expire  = max(1, absint(get_option('nias_login_expire', 120)));
-    $code    = nias_bale_resend_generate_code($digits);
+    $digits = absint(get_option('nsdigitsquantity', 4));
+    $expire = max(1, absint(get_option('nias_login_expire', 120)));
+    $code   = nias_bale_resend_generate_code($digits);
     $new_exp = date('Y-m-d H:i:s', $now + $expire);
 
-    // از خود کلاس Nias استفاده می‌کنیم تا API و تنظیمات بله دوباره پیاده‌سازی نشود.
     try {
-        $gateway = new Nias_SMS_Gateway();
+        $gateway  = new Nias_SMS_Gateway();
         $response = $gateway->send_bale($identifier, $code);
     } catch (Throwable $e) {
         wp_send_json_error(['message' => 'خطا در ارسال کد با بله.'], 500);
@@ -174,6 +159,7 @@ function nias_bale_resend_ajax() {
 }
 
 function nias_bale_resend_client_ip() {
-    // عمداً فقط REMOTE_ADDR استفاده می‌شود؛ هدرهای HTTP_* قابل جعل هستند.
-    return isset($_SERVER['REMOTE_ADDR']) ? sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR'])) : '0.0.0.0';
+    return isset($_SERVER['REMOTE_ADDR'])
+        ? sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR']))
+        : '0.0.0.0';
 }
